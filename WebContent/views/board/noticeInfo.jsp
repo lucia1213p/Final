@@ -1,0 +1,128 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ page import = "kr.or.tech.board.model.vo.*"
+		import = "kr.or.tech.member.model.vo.*"
+		import="java.util.ArrayList"
+ %>
+<% 
+	Notice n =(Notice)request.getAttribute("notice");
+	
+	ArrayList<NComment> ncList = (ArrayList<NComment>)request.getAttribute("nComment");
+	
+	Member m = ((Member)request.getSession(false).getAttribute("member"));
+	
+%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width",initial-scale="1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="/css/comment.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+<title>공지사항 게시글 페이지</title>
+
+<style>
+
+.container{
+		padding-top:50px;
+}
+
+table tr td:nth-child(1){
+	font-weight: bold; 
+}
+</style>
+
+</head>
+
+<body>
+	<!-- 헤더 내비 -->
+	<jsp:include page="/header.jsp" flush="false" />
+	
+	<div class="container">
+		<div class="row">
+			<table class="table table-striped" style="text-align:center; border:1px solid #dddddd">
+				<thead>
+					<tr>
+						<th colspan="3" style="background-color: #eeeeee; text-align :center;">공지사항 게시글</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td style="width :20%;">제목</td>
+						<td colspan="2"><%= n.getNoticeTitle()%></td>
+					</tr>
+					<tr>
+						<td>작성자</td>
+						<td colspan="2"><%= n.getMemberName()%></td>
+					</tr>
+					<tr>
+						<td>작성일자 </td>
+						<td colspan="2"><%= n.getNoticeDate()%></td>
+					</tr>
+					<tr>
+						<td>내용</td>
+						<td colspan="2"><div style="min-height: 200px; text-align: left;"><%=n.getNoticeContent()%></div></td>
+					</tr>
+					<tr>
+						<td>첨부파일</td>
+						<td colspan="2"><%=n.getNoticeFile() %></td>
+					</tr>
+				</tbody>
+			</table>
+				<a href="#" class="btn btn-primary btn-sm active">목록</a>
+				<!-- (수정) 글 작성자나 관리자가 아니면 수정,삭제 못하게 -->
+				<a href="#" class="btn btn-primary btn-sm active">수정</a>
+				<a href="#" class="btn btn-primary btn-sm active">삭제</a>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row" id="comment">
+			<form action="/nCommentWrite.do" method="post">
+				<%if(session.getAttribute("member")!=null){%>
+					<div class="commentWrite">
+						<textarea id="comment" name="comment" class="form-control" rows="3" style="resize:none;margin:0px;"></textarea>
+						<input type="hidden" name="boardCode" value="<%=n.getBoardCode() %>"/>
+						<input type="hidden" name="noticeNo" value="<%=n.getNoticeNo()%>"/>
+						<input type="submit" class="btn pull-right" value="댓글작성"/>
+					</div>
+				<%}else{ %>
+					<div class="commentWrite">
+						<h3>로그인 후 댓글 작성이 가능합니다</h3>
+					</div>
+				<%}%>
+			</form>
+		</div>
+		<div class="comment_list">
+			<%if(!ncList.isEmpty()) {%>
+				<%for(NComment nc : ncList) {%>
+					<div class="comments">
+						<div class="comment-wrap">
+								<div class="name">
+									<div><%=nc.getMemberName()%></div>
+								</div>
+								<div class="comment-block">
+										<p class="comment-text"><%=nc.getCommCont() %></p>
+										<div class="bottom-comment">
+												<div class="comment-date"><%=nc.getCommDate() %></div>
+												<ul class="comment-actions">
+														<li class="complain">수정</li>
+														<li class="reply">삭제</li>
+												</ul>
+										</div>
+								</div>
+						</div>
+			
+					</div>
+				<%} %>
+			  <%}else{ %>
+			  		<h3>댓글이 없습니다.</h3>
+			  <%} %>
+		</div>
+	</div>
+</body>
+</html>

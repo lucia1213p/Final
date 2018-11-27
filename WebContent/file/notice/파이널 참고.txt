@@ -1,0 +1,86 @@
+==================페이지목록==================
+
+#로그인페이지
+#회원가입페이지
+#마이페이지
+	회원정보,수정
+	비밀번호변경
+	회원탈퇴
+	기술지원게시판활동내역
+	기술공유게시판활동내역
+#관리자페이지
+	회원가입승인페이지
+	회원관리페이지
+	기술지원게시판현황
+#게시판페이지
+	공지사항목록페이지
+	공지사항게시글페이지
+	공지사항글작성페이지
+	기술공유게시판목록페이지
+	기술공유게시글페이지
+	기술공유게시판글작성페이지
+	기술지원게시판목록페이지
+	기술지원게시글페이지
+	기술지원게시판글작성페이지
+
+
+==========================================================================================
+
+
+
+#1. JSP 답변형 게시판
+
+http://all-record.tistory.com/tag/JSP%20%EB%8B%B5%EB%B3%80%ED%98%95%20%EA%B2%8C%EC%8B%9C%ED%8C%90
+
+#2. 회원가입 폼
+
+https://bootsnipp.com/snippets/orMGB
+
+#3. 첨부파일 부트스트랩
+
+http://bellsilver7.tistory.com/45
+
+https://bootsnipp.com/snippets/featured/input-file-popover-preview-image
+
+https://bootsnipp.com/snippets/8MRBQ
+
+
+#4. 다중 select문
+
+https://m.blog.naver.com/PostView.nhn?blogId=baeckwind18&logNo=191230622&proxyReferer=https%3A%2F%2Fwww.google.co.kr%2F
+
+#5. 슬라이드 메뉴
+
+https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_sidenav_push
+
+#6. AJAX를 활용한 아이디 중복체크
+
+http://kingchobocoding.tistory.com/11
+
+#7. 회원가입 유효성 검사
+
+http://zero-gravity.tistory.com/246
+
+#8. 비밀번호 변경
+
+https://hongku.tistory.com/249
+
+#9. 비밀번호 찾기
+
+https://m.blog.naver.com/PostView.nhn?blogId=heartflow89&logNo=221114309890&proxyReferer=https%3A%2F%2Fwww.google.co.kr%2F
+
+http://antworld.tistory.com/13
+
+
+#10. 게시글 조회수
+
+http://seinarin.tistory.com/7
+
+#11. 게시판 메인화면
+
+https://www.google.co.kr/search?q=%EA%B2%8C%EC%8B%9C%ED%8C%90+%EB%A9%94%EC%9D%B8%ED%99%94%EB%A9%B4&source=lnms&tbm=isch&sa=X&ved=0ahUKEwibrvm0m-feAhXKto8KHb9eA6AQ_AUIDigB&biw=950&bih=920#imgrc=Yf1tWg2SmbaZgM:
+
+
+#12. 테이블 두개 INSERT
+https://blog.naver.com/gsincorea/60091885530
+
