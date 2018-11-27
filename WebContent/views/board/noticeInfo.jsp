@@ -70,7 +70,7 @@ table tr td:nth-child(1){
 					</tr>
 					<tr>
 						<td>첨부파일</td>
-						<td colspan="2"><%=n.getNoticeFile() %></td>
+						<td colspan="2"><a href="/nFileDown.do?fileName=<%=n.getNoticeFile() %>"><%=n.getNoticeFile() %></a></td>
 					</tr>
 				</tbody>
 			</table>
@@ -102,21 +102,22 @@ table tr td:nth-child(1){
 				<%for(NComment nc : ncList) {%>
 					<div class="comments">
 						<div class="comment-wrap">
-								<div class="name">
-									<div><%=nc.getMemberName()%></div>
+								<div style="width:20%; float:left;" class="name">
+									<div><b><%=nc.getMemberName()%></b></div>
 								</div>
-								<div class="comment-block">
+								<div style="width:90%; float:left;" class="comment-block">
 										<p class="comment-text"><%=nc.getCommCont() %></p>
 										<div class="bottom-comment">
 												<div class="comment-date"><%=nc.getCommDate() %></div>
-												<ul class="comment-actions">
-														<li class="complain">수정</li>
-														<li class="reply">삭제</li>
-												</ul>
+												<%if(m.getMemberId().equals(nc.getMemberName())) {%>
+													<ul class="comment-actions">
+															<li class="complain"><a href="#" id="updateComment" onclick="updateCmt(<%=nc.getCommNo()%>)">수정</a></li>
+															<li class="reply"><a href="#" onclick="delComment(<%=nc.getCommNo()%>)">삭제</a></li>
+													</ul>
+											 	<%} %>
 										</div>
 								</div>
 						</div>
-			
 					</div>
 				<%} %>
 			  <%}else{ %>
@@ -124,5 +125,37 @@ table tr td:nth-child(1){
 			  <%} %>
 		</div>
 	</div>
+	<script>
+		//댓글 수정
+		function updateCmt(cmtNum){
+			 window.name = "parentForm";
+	            window.open("updateComment.do?num="+comment_num,
+	                        "updateForm", "width=570, height=350, resizable = no, scrollbars = no");
+
+		}
+		function delComment(cmtNum){
+			if(confirm("댓글을 삭제하시겠습니까?")){
+				$.ajax({
+					url:"/nCommentDelete.do",
+					type:"post",
+					data:{cmtNo:cmtNum},
+					success: function(result){
+						if (result==1) {
+							alert("삭제되었습니다");
+							location.reload();
+						}else{
+							alert("삭제 실패");
+						}
+					},
+					error:function(){
+						location.href="/views/error/errorPage.jsp"
+					}
+				});
+			}else{
+				return false;
+			}
+			
+		}
+	</script>
 </body>
 </html>

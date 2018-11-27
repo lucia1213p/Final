@@ -48,6 +48,7 @@ p {
   min-height: 5.3125rem;
 }
 
+
 .photo {
   padding-top: 0.625rem;
   display: table-cell;
@@ -111,4 +112,15 @@ p {
 .comment_list{
 	padding-top:20px;
 	
+}
+
+<!-- 댓글 작성 아래 margin -->
+#comment{
+	margin-bottom:30px;
+}
+
+<!-- 댓글 목록 (아이디, 댓글 내용 간격) -->
+div .comment-block{
+	float: right;
+    width: 85%;
 }

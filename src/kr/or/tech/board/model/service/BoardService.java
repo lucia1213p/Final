@@ -86,4 +86,20 @@ public class BoardService {
 		return list;
 	}
 
+	//댓글 삭제
+	public int deleteNoticeComm(int commNo) {
+		Connection conn =JDBCTemplate.getConnection();
+		int result = new BoardDao().deleteNoticeComm(conn,commNo);
+		System.out.println(commNo);
+		if(result>0) {
+			JDBCTemplate.commit(conn);
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		
+		JDBCTemplate.close(conn);
+		
+		return result;
+	}
+
 }

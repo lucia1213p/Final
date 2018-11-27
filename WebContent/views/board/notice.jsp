@@ -109,12 +109,11 @@
                          	<span class="input-group-btn">
 			                  <button class="btn btn-default" id="writeBtn" type="button"><span class="glyphicon glyphicon-search"></span></button>
                         	</span>
-                         
                           -->
                           <span class="input-group-btn">
 			                  <button class="btn btn-default" id="writeBtn" type="button"><span class="glyphicon glyphicon-search"></span></button>
-                        </span>
-                 </div>
+                          </span>
+                </div>
             </center>
         </form>
     	</div>

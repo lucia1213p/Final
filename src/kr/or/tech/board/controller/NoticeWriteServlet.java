@@ -37,8 +37,6 @@ public class NoticeWriteServlet extends HttpServlet {
 		HttpSession session = request.getSession(false);
 		Member m =  (Member)session.getAttribute("member");
 		
-		
-		
 		if(m!=null) {
 			
 			//최대 업로드 파일 사이즈

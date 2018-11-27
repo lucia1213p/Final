@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import jdk.nashorn.internal.scripts.JD;
 import kr.or.tech.board.model.vo.NComment;
 import kr.or.tech.board.model.vo.Notice;
 import kr.or.tech.common.JDBCTemplate;
@@ -206,6 +207,29 @@ public class BoardDao {
 			JDBCTemplate.close(rset);
 		}
 		return list;
+	}
+
+	public int deleteNoticeComm(Connection conn, int commNo) {
+		
+		PreparedStatement pstmt=null;
+		int result = 0;
+		
+		String query ="delete from COMMENT_TBL where comm_no=?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setInt(1, commNo);
+			
+			result=pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+		}
+		return result;
+		
 	}
 
 }
