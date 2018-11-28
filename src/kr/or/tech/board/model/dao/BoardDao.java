@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import jdk.nashorn.internal.scripts.JD;
+
 import kr.or.tech.board.model.vo.ShrTech;
 import kr.or.tech.board.model.vo.NComment;
 import kr.or.tech.board.model.vo.Notice;
@@ -100,13 +100,33 @@ public class BoardDao {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}finally {
-			JDBCTemplate.close(pstmt);
 			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
 		}
 		return list;
 		
 	}
 
+	public int changeHits(Connection conn, int noticeNo, String boardCode) {
+		PreparedStatement pstmt=null;
+		int result = 0;
+		String query ="update notice set N_HITS=N_HITS+1 where n_no=? and b_code=?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setInt(1, noticeNo);
+			pstmt.setString(2, boardCode);
+			
+			result=pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+		}
+		return result;
+	}
+	
 	public Notice noticeInfo(Connection conn, int noticeNo, String boardCode) {
 		
 		PreparedStatement pstmt=null;
@@ -141,8 +161,8 @@ public class BoardDao {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}finally {
-			JDBCTemplate.close(pstmt);
 			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
 		}
 		return notice;
 		

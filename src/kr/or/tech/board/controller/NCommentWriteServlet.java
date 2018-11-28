@@ -13,7 +13,6 @@ import javax.servlet.http.HttpSession;
 import kr.or.tech.board.model.service.BoardService;
 import kr.or.tech.board.model.vo.NComment;
 import kr.or.tech.member.model.vo.Member;
-import oracle.net.aso.n;
 
 /**
  * Servlet implementation class NCommentWriteServlet

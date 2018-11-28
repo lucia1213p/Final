@@ -74,7 +74,7 @@ table tr td:nth-child(1){
 					</tr>
 				</tbody>
 			</table>
-				<a href="#" class="btn btn-primary btn-sm active">목록</a>
+				<a href="/noticeList.do" class="btn btn-primary btn-sm active">목록</a>
 				<!-- (수정) 글 작성자나 관리자가 아니면 수정,삭제 못하게 -->
 				<a href="#" class="btn btn-primary btn-sm active">수정</a>
 				<a href="#" class="btn btn-primary btn-sm active">삭제</a>

@@ -50,13 +50,17 @@ public class BoardService {
 	public Notice noticeInfo(int noticeNo, String boardCode) {
 		Connection conn =JDBCTemplate.getConnection();
 		
-		System.out.println("게시글번호:" +noticeNo);
-		System.out.println("게시판코드: "+boardCode);
+		//조회수 증가
+		int changeHits =  new BoardDao().changeHits(conn, noticeNo, boardCode);
+		
+		if(changeHits>0) {
+			JDBCTemplate.commit(conn);
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		//공지사항내용 가져오기
 		Notice notice=new BoardDao().noticeInfo(conn,noticeNo,boardCode);
 		
-		if(notice!=null) {
-			System.out.println("게시글받아옴");
-		}
 		JDBCTemplate.close(conn);
 		
 		return notice;

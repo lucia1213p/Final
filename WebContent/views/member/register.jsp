@@ -97,35 +97,30 @@
 	$(function(){
 		//아이디 중복체크	
 		$('#idCheck').click(function(){
-			var id= $('#id').val();
-			$.ajax({
-				type:'POST',
-				url:'/idCheck.do',
-				data:{userId:id},
-				success : function(data){
-					if(data=="true")
-					{
-						alert("ID사용불가");
-						//아이디가 중복될 경우 입력했던 아이디 지우고 focus
-						$('#id').val('').focus();
-					}else{
-						alert("사용가능");
-					}
-				},
-				error:function(){
-					location.href="/views/error/errorPage.jsp"
-				}
-			});
-		});
-		$("#id").keyup(function(){
 			if($("#id").val()==""){
-				$("#idMsg").text("");
-				$("#idMsg").text("아이디를 입력해주세요");	
-			}else if(/^[a-zA-Z0-9]{4,15}$/.test($("#id").val())){
-				$("#idMsg").text("");
-				$("#idMsg").text("영문자,숫자로 4~15자 입력해주세요");
+				alert("아이디를 입력해주세요");	
+			}else if(!/^[0-9a-zA-Z]{4,15}$/.test($("#id").val())){
+				alert("영문자,숫자로 4~15자 입력해주세요");
 			}else{
-				$("#idMsg").text("");
+				var id= $('#id').val();
+				$.ajax({
+					type:'POST',
+					url:'/idCheck.do',
+					data:{userId:id},
+					success : function(data){
+						if(data=="true")
+						{
+							alert("ID사용불가");
+							//아이디가 중복될 경우 입력했던 아이디 지우고 focus
+							$('#id').val('').focus();
+						}else{
+							alert("사용가능");
+						}
+					},
+					error:function(){
+						location.href="/views/error/errorPage.jsp"
+					}
+				});
 			}
 		});
 	});
@@ -170,7 +165,6 @@
                   	 	<tr>
                   	 		<td width="90%"><input type="text" name="id" id="id" class="form-control my-input" placeholder="아이디를 입력하세요"></td>
                   	 		<td><button type="button" id="idCheck" class="btn btn-info">중복체크</button></td>
-                  	 		<td><p id="idMsg" style="color:red;"></p></td>
                   	 	</tr>
                   	 </table>
                   </div>
