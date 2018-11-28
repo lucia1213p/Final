@@ -1,10 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="kr.or.tech.board.model.vo.*" 
-	import="java.util.ArrayList"
+         import = "kr.or.tech.member.model.vo.*"
+	     import="java.util.ArrayList"
 %>
 <%
-	ArrayList<Notice> list = (ArrayList<Notice>)request.getAttribute("noticeList");
+ArrayList<Notice> list = (ArrayList<Notice>)request.getAttribute("noticeList");
+Member m = ((Member)request.getSession(false).getAttribute("member"));
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -43,11 +45,15 @@
     <table class="table table-bordered table-hover">
     <thead class="table">
         <tr>
-            <th class="text-center">No</th>
-            <th class="text-center">Title</th>
-            <th class="text-center">Writer</th>
-            <th class="text-center">Action</th>
-            <th class="text-center">Hits</th>
+            <th class="text-center">번호</th>
+            <th class="text-center">제목</th>
+            <th class="text-center">작성자</th>
+            <th class="text-center">수정</th>
+            <th class="text-center">삭제</th>
+            <th class="text-center">조회수</th>
+            <%if((m.getMemberGrade().equals("HA")||m.getMemberGrade().equals("MA"))&&!list.isEmpty()) {%>
+            <th class="text-center">선택</th>
+            <%} %>
         </tr>
     </thead>
     <tbody>
@@ -59,8 +65,12 @@
                 <input type="hidden" name="boardCode" value="<%=n.getBoardCode() %>"/>
                 <td><%=n.getNoticeTitle() %></td>
                 <td><%=n.getMemberName() %></td>
-                <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a> <a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
+                <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a></td>
+                <td class="text-center"><a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
            		<td><%=n.getNoticeHits() %></td>
+           	<%if(m.getMemberGrade().equals("HA")||m.getMemberGrade().equals("MA")) {%>
+           		<td><button onclick="selectNotice(<%=n.getNoticeNo() %>)" class="btn btn-primary">선택</button></td>
+           	<%} %>
             </tr>
          	<%} %>
 		<%}else{%> 
@@ -70,6 +80,9 @@
 				<td></td>
 				<td></td>
 				<td></td>
+				<%if(m.getMemberGrade().equals("HA")||m.getMemberGrade().equals("MA")) {%>
+           		<td></td>
+           		<%} %>
 			</tr>	
 		<%} %>
 	 </tbody>
@@ -77,7 +90,7 @@
 </div>
     <!-- pagination -->
     <div class="container">  
- 
+ 		
 	  <div class="row">
 	  		<button type="button" id="writeBtn" class="btn btn-primary btn-sm active pull-right">글작성</button>
 	  </div>
@@ -124,6 +137,30 @@
 	$('#writeBtn').click(function(){
 		location.href="/views/board/noticeWrite.jsp";
 	});
+	
+	//관리자권한일 경우 공지사항 1개 선택
+	function selectNotice(noticeNo){
+		if(confirm("공지사항을 선택하시겠습니까?")){
+			$.ajax({
+				url:"/noticeSelect.do",
+				type:"post",
+				data:{noticeNo:noticeNo},
+				success:function(result){
+					if(result=true){
+						alert("선택 완료");
+						location.reload();
+					}else{
+						alert("선택 실패");
+					}
+				},
+				error:function(){
+					location.href="/views/error/errorPage.jsp"	;
+				}
+			});
+		}else{
+			return false;
+		}
+	}
 </script>
 </body>
 </html>

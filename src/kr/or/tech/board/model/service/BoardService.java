@@ -4,8 +4,10 @@ import java.sql.Connection;
 import java.util.ArrayList;
 
 import kr.or.tech.board.model.dao.BoardDao;
+import kr.or.tech.board.model.vo.MainpageBoard;
 import kr.or.tech.board.model.vo.NComment;
 import kr.or.tech.board.model.vo.Notice;
+import kr.or.tech.board.model.vo.ShrTech;
 import kr.or.tech.common.JDBCTemplate;
 
 public class BoardService {
@@ -100,6 +102,58 @@ public class BoardService {
 		JDBCTemplate.close(conn);
 		
 		return result;
+	}
+	
+	//관리자 권한일 경우 공지사항 게시글 1개 선택
+	public boolean selectOneNotice(int noticeNo) {
+		Connection conn =JDBCTemplate.getConnection();
+		Boolean searchResult=new BoardDao().searchYNotice(conn);
+		
+		if(searchResult==true) {
+			int result1=new BoardDao().changeNoticeState(conn);
+			System.out.println("result1="+result1);
+		}
+		int result2=new BoardDao().selectOneNotice(conn,noticeNo);
+		System.out.println("result2="+result2);
+		boolean result=false;
+		if(result2>0) {
+			JDBCTemplate.commit(conn);
+			result=true;
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		
+		JDBCTemplate.close(conn);
+		return result;
+	}
+
+	public MainpageBoard mainOneSelectNotice() {
+		Connection conn =JDBCTemplate.getConnection();
+		//관리자가 선택한 공지사항 게시글 1개
+		Notice selectNotice = new BoardDao().mainOneSelectNotice(conn);
+		//최근 공지사항 게시글5개
+		ArrayList<Notice> recentNotice = new BoardDao().mainRecentNotice(conn);
+		
+		MainpageBoard mpb=null;
+		if(!recentNotice.isEmpty()) {
+			mpb=new MainpageBoard();
+			mpb.setSelectNotice(selectNotice);
+			mpb.setRecentNotice(recentNotice);
+		}
+		JDBCTemplate.close(conn);
+		
+		return mpb;
+	}
+	
+	//기술공유게시판 리스트
+	public ArrayList<ShrTech> shareTechList() {
+		Connection conn =JDBCTemplate.getConnection();
+		
+		ArrayList<ShrTech> shrList=  new BoardDao().shareTechList(conn);
+		
+		JDBCTemplate.close(conn);
+		
+		return shrList;
 	}
 
 }

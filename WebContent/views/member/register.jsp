@@ -117,6 +117,17 @@
 				}
 			});
 		});
+		$("#id").keyup(function(){
+			if($("#id").val()==""){
+				$("#idMsg").text("");
+				$("#idMsg").text("아이디를 입력해주세요");	
+			}else if(/^[a-zA-Z0-9]{4,15}$/.test($("#id").val())){
+				$("#idMsg").text("");
+				$("#idMsg").text("영문자,숫자로 4~15자 입력해주세요");
+			}else{
+				$("#idMsg").text("");
+			}
+		});
 	});
 	
 	
@@ -159,17 +170,20 @@
                   	 	<tr>
                   	 		<td width="90%"><input type="text" name="id" id="id" class="form-control my-input" placeholder="아이디를 입력하세요"></td>
                   	 		<td><button type="button" id="idCheck" class="btn btn-info">중복체크</button></td>
+                  	 		<td><p id="idMsg" style="color:red;"></p></td>
                   	 	</tr>
                   	 </table>
                   </div>
                   <div class="form-group">
                   	<label for="inputPwd">비밀번호</label>
                      <input type="password" name="password"  class="form-control my-input" id="password" placeholder="비밀번호를 입력하세요">
+                     <p id="pwdMsg" style="color:red;"></p>
                      <span></span>
                   </div>
                   <div class="form-group">
                   	<label for="pwdCheck">비밀번호 확인</label>
                      <input type="password" name="pwdCheck"  class="form-control my-input" id="pwdCheck" placeholder="비밀번호 확인을 위해 다시한번 입력 해 주세요">
+                     <p id="pwdCheckMsg" style="color:red;"></p>
                      <span></span>
                   </div>
                   <div class="form-group">

@@ -186,7 +186,7 @@
 		</div>
 	    <ul class="nav navbar-nav" id="navbar">
 	      <li><a href="/noticeList.do">공지사항</a></li>
-	      <li><a href="#">기술공유</a></li>
+	      <li><a href="/shareTechList.do">기술공유</a></li>
 	      <li><a href="#">기술지원</a></li>
 	      <%if((member.getMemberGrade().equals("HA") || member.getMemberGrade().equals("MA"))) {%>
 	      <li><a href="#"><span onclick="adminNav()">관리자페이지</span></a></li>

@@ -13,7 +13,10 @@
 		Member member=(Member)session.getAttribute("member");
 		if(member!=null){ //로그인 상태일 경우
 	%>
-		<jsp:include page="/main.jsp" flush="false" />
+		<%-- <jsp:include page="/MainPageBoard" flush="false" /> --%>
+		<script>
+		location.href="/mainPageBoard.do";
+		</script>
 	<% 		
 		}else{ //로그인 하지 않았을 경우
 	%>	

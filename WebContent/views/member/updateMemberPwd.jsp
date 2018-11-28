@@ -17,7 +17,6 @@
 	<script>
 		$(function(){
 			$("#currentPwd").keyup(function(){
-				
 				$("#currentPwdMsg").text("현재 비밀번호를 입력해주세요");
 			});
 			$("#newPwd").keyup(function(){

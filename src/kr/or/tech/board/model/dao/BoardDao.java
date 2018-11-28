@@ -4,9 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import jdk.nashorn.internal.scripts.JD;
+import kr.or.tech.board.model.vo.ShrTech;
 import kr.or.tech.board.model.vo.NComment;
 import kr.or.tech.board.model.vo.Notice;
 import kr.or.tech.common.JDBCTemplate;
@@ -16,7 +18,7 @@ public class BoardDao {
 		PreparedStatement pstmt=null;
 		int result = 0;
 		
-		String query = "insert all into notice values(NOTICE_SQ.NEXTVAL,?,?,sysdate,0,?,'notice',?,?) "
+		String query = "insert all into notice values(NOTICE_SQ.NEXTVAL,?,?,sysdate,0,?,'notice',?,?,'N') "
 				+ "into FILEINFO values(FILE_SQ.NEXTVAL,?,'notice',NOTICE_SQ.CURRVAL) "
 				+ "select * from dual";
 		
@@ -231,5 +233,177 @@ public class BoardDao {
 		return result;
 		
 	}
+	//이전에 선택한 공지사항 게시물이 있었는지 확인
+	public Boolean searchYNotice(Connection conn) {
+		Statement stmt=null;
+		ResultSet rset=null;
+		int noticeNo=0;
+		Boolean result=false;
+		String query = "select * from notice where n_state='Y'";
+		try {
+			stmt=conn.createStatement();
+			rset=stmt.executeQuery(query);
+			
+			if(rset.next()) {
+				noticeNo=rset.getInt("n_no");
+				result=true;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(stmt);
+		}
+		System.out.println("dao1실행완료");
+		return result;
+	}
+	
+	//관리자 권한일 경우 공지사항 게시글 1개 선택 => 원래 선택되었던 상태 N으로
+	public int changeNoticeState(Connection conn) {
+		Statement stmt=null;
+		int result=0;
+		String query = "update notice set n_state='N' where n_state='Y'";
+		try {
+			stmt=conn.createStatement();
+			result=stmt.executeUpdate(query);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(stmt);
+		}
+		System.out.println("dao1실행완료");
+		return result;
+	}
+	
+	//선택한 공지사항 게시글 상태 변경
+	public int selectOneNotice(Connection conn, int noticeNo) {
+		PreparedStatement pstmt=null;
+		int result=0;
+		String query ="update notice set n_state='Y' where n_no=?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setInt(1, noticeNo);
+			result=pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+		}
+		return result;
+	}
+
+	public Notice mainOneSelectNotice(Connection conn) {
+		PreparedStatement pstmt=null;
+		ResultSet rset=null;
+		Notice selectNotice=null;
+		String query="select n.*,m.MEMBER_NAME from notice n, member m where n.member_no=m.MEMBER_NO and n_state='Y'";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			rset=pstmt.executeQuery();
+			
+			if(rset.next()) {
+				selectNotice=new Notice();
+				selectNotice.setNoticeNo(rset.getInt("n_no"));
+				selectNotice.setNoticeTitle(rset.getString("n_title"));
+				selectNotice.setNoticeContent(rset.getString("n_cont"));
+				selectNotice.setNoticeDate(rset.getDate("n_date"));
+				selectNotice.setNoticeHits(rset.getInt("n_hits"));
+				selectNotice.setMemberNo(rset.getInt("member_no"));
+				selectNotice.setMemberName(rset.getString("member_name"));
+				selectNotice.setBoardCode(rset.getString("b_code"));
+				selectNotice.setNoticeGrade(rset.getString("n_grade"));
+				selectNotice.setNoticeFile(rset.getString("n_file"));	
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		return selectNotice;
+	}
+
+	//최근 공지사항 게시글 5개 불러오기
+	public ArrayList<Notice> mainRecentNotice(Connection conn) {
+		
+		PreparedStatement pstmt=null;
+		ResultSet rset=null;
+		ArrayList<Notice> recentNotice=new ArrayList<Notice>();
+		String query = "select a.*,m.MEMBER_NAME from(SELECT * FROM notice ORDER BY n_date DESC)a, member m where a.member_no=m.MEMBER_NO and rownum<=5";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			rset=pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Notice notice = new Notice();
+				notice.setNoticeNo(rset.getInt("n_no"));
+				notice.setNoticeTitle(rset.getString("n_title"));
+				notice.setNoticeContent(rset.getString("n_cont"));
+				notice.setNoticeDate(rset.getDate("n_date"));
+				notice.setNoticeHits(rset.getInt("n_hits"));
+				notice.setMemberNo(rset.getInt("member_no"));
+				notice.setMemberName(rset.getString("member_name"));
+				notice.setBoardCode(rset.getString("b_code"));
+				notice.setNoticeFile(rset.getString("n_file"));
+				notice.setNoticeGrade(rset.getString("n_grade"));
+				
+				recentNotice.add(notice);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return recentNotice;
+	}
+
+	public ArrayList<ShrTech> shareTechList(Connection conn) {
+		PreparedStatement pstmt=null;
+		ResultSet rset=null;
+		ArrayList<ShrTech> shrList=new ArrayList<ShrTech>();
+		ShrTech shr=null;
+		
+		String query="select s.*, m.MEMBER_NAME from SHR_TECH s , member m where s.MEMBER_NO=m.MEMBER_NO";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			rset=pstmt.executeQuery();
+			
+			while(rset.next()) {
+				shr=new ShrTech();
+				shr.setShareNo(rset.getInt("s_no"));
+				shr.setShareTitle(rset.getString("s_title"));
+				shr.setShareCont(rset.getString("s_cont"));
+				shr.setShareDate(rset.getDate("s_date"));
+				shr.setShareHits(rset.getInt("s_hits"));
+				shr.setMemberNo(rset.getInt("member_no"));
+				shr.setBoardCode(rset.getString("b_code"));
+				shr.setFileName(rset.getString("s_file"));
+				shr.setShareAddopt(rset.getString("s_addopt"));
+				shr.setMemberId(rset.getString("member_name"));
+				
+				shrList.add(shr);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		
+		return shrList;
+	}
+
 
 }
