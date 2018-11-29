@@ -13,12 +13,14 @@ public class ShrTech {
 	private String boardCode; //게시판 코드
 	private String fileName; //첨부파일명
 	private String shareAddopt; //채택상태
+	private String AddoptName;
+	
 	public ShrTech() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	public ShrTech(int shareNo, String shareTitle, String shareCont, Date shareDate, int shareHits, int memberNo,
-			String memberId, String boardCode, String fileName, String shareAddopt) {
+			String memberId, String boardCode, String fileName, String shareAddopt, String addoptName) {
 		super();
 		this.shareNo = shareNo;
 		this.shareTitle = shareTitle;
@@ -30,6 +32,7 @@ public class ShrTech {
 		this.boardCode = boardCode;
 		this.fileName = fileName;
 		this.shareAddopt = shareAddopt;
+		AddoptName = addoptName;
 	}
 	public int getShareNo() {
 		return shareNo;
@@ -91,6 +94,13 @@ public class ShrTech {
 	public void setShareAddopt(String shareAddopt) {
 		this.shareAddopt = shareAddopt;
 	}
+	public String getAddoptName() {
+		return AddoptName;
+	}
+	public void setAddoptName(String addoptName) {
+		AddoptName = addoptName;
+	}
+
 	
 	
 	

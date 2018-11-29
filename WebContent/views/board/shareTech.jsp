@@ -50,6 +50,7 @@
             <th class="text-center">작성자</th>
             <th class="text-center">수정</th>
             <th class="text-center">삭제</th>
+            <th class="text-center">채택상태</th>
             <th class="text-center">조회수</th>
         </tr>
     </thead>
@@ -57,11 +58,12 @@
     	<%if(!list.isEmpty()) {%>
     		<%for(ShrTech shr : list) {%>
             <tr>
-                <td><a href="#"><%=shr.getShareNo() %></a></td>
+                <td><a href="/shareTechInfo.do?shrTechNo=<%=shr.getShareNo()%>&boardCode=<%=shr.getBoardCode()%>"><%=shr.getShareNo() %></a></td>
                 <td><%=shr.getShareTitle() %></td>
                 <td><%=shr.getMemberId() %></td>
                 <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a></td>
                 <td class="text-center"><a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
+           		<td><%=shr.getAddoptName() %></td>
            		<td><%=shr.getShareHits() %></td>
             </tr>
          	<%} %>
@@ -122,5 +124,11 @@
     	</div>
 	</div>
    </div>
+   
+   <script>
+	   $('#writeBtn').click(function(){
+			location.href="/views/board/shareTechWrite.jsp";
+		});
+   </script>
 </body>
 </html>

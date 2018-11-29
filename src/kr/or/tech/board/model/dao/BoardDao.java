@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 
 import kr.or.tech.board.model.vo.ShrTech;
+import kr.or.tech.board.model.vo.ShrTechAnswer;
 import kr.or.tech.board.model.vo.NComment;
 import kr.or.tech.board.model.vo.Notice;
 import kr.or.tech.common.JDBCTemplate;
@@ -106,7 +107,9 @@ public class BoardDao {
 		return list;
 		
 	}
-
+	
+	
+	//조회수 증가
 	public int changeHits(Connection conn, int noticeNo, String boardCode) {
 		PreparedStatement pstmt=null;
 		int result = 0;
@@ -385,6 +388,8 @@ public class BoardDao {
 		
 		return recentNotice;
 	}
+	
+	//----------기술공유게시판
 
 	public ArrayList<ShrTech> shareTechList(Connection conn) {
 		PreparedStatement pstmt=null;
@@ -392,7 +397,7 @@ public class BoardDao {
 		ArrayList<ShrTech> shrList=new ArrayList<ShrTech>();
 		ShrTech shr=null;
 		
-		String query="select s.*, m.MEMBER_NAME from SHR_TECH s , member m where s.MEMBER_NO=m.MEMBER_NO";
+		String query="select s.*, m.MEMBER_NAME,t.S_APTNAME from SHR_TECH s , member m, SBOARD_ST t where s.MEMBER_NO=m.MEMBER_NO and s.S_ADDOPT=t.S_ADDOPT";
 		
 		try {
 			pstmt=conn.prepareStatement(query);
@@ -409,6 +414,7 @@ public class BoardDao {
 				shr.setBoardCode(rset.getString("b_code"));
 				shr.setFileName(rset.getString("s_file"));
 				shr.setShareAddopt(rset.getString("s_addopt"));
+				shr.setAddoptName(rset.getString("s_aptname"));
 				shr.setMemberId(rset.getString("member_name"));
 				
 				shrList.add(shr);
@@ -423,6 +429,146 @@ public class BoardDao {
 		
 		
 		return shrList;
+	}
+	
+	//기술공유게시글 작성
+	public int writeShareTech(Connection conn, ShrTech shr) {
+		PreparedStatement pstmt=null;
+		String query="insert into SHR_TECH values(SHARE_SQ.NEXTVAL,?,?,sysdate,0,?,'share',?,'N')";
+		int result=0;
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setString(1, shr.getShareTitle());
+			pstmt.setString(2, shr.getShareCont());
+			pstmt.setInt(3, shr.getMemberNo());
+			pstmt.setString(4, shr.getFileName());
+			
+			result=pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+		}
+		return result;
+	}
+
+
+	//기술공유 게시글 조회수 증가
+	public int changeShrHits(Connection conn, int shareTechNo, String boardCode) {
+		PreparedStatement pstmt=null;
+		int result = 0;
+		String query ="update SHR_TECH set S_HITS=S_HITS+1 where s_no=? and b_code=?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setInt(1, shareTechNo);
+			pstmt.setString(2, boardCode);
+			
+			result=pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+		}
+		return result;
+		
+	}
+	
+	//기술공유 게시글 불러오기
+	public ShrTech shareTechInfo(Connection conn, int shareTechNo, String boardCode) {
+		PreparedStatement pstmt=null;
+		ResultSet rset=null;
+		ShrTech shr=null;
+		String query = "select s.*,m.MEMBER_ID,t.S_APTNAME from SHR_TECH s, member m, SBOARD_ST t where s.MEMBER_NO=m.MEMBER_NO and s.S_ADDOPT=t.S_ADDOPT and  s_no=? and b_code=?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setInt(1, shareTechNo);
+			pstmt.setString(2, boardCode);
+			
+			rset=pstmt.executeQuery();
+			
+			if(rset.next()) {
+				shr = new ShrTech();
+				shr.setShareNo(rset.getInt("s_no"));
+				shr.setShareTitle(rset.getString("s_title"));
+				shr.setShareCont(rset.getString("s_cont"));
+				shr.setShareDate(rset.getDate("s_date"));
+				shr.setShareHits(rset.getInt("s_hits"));
+				shr.setMemberNo(rset.getInt("member_no"));
+				shr.setBoardCode(rset.getString("b_code"));
+				shr.setFileName(rset.getString("s_file"));
+				shr.setShareAddopt(rset.getString("s_addopt"));
+				shr.setMemberId(rset.getString("member_id"));
+				shr.setAddoptName(rset.getString("s_aptname"));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+			JDBCTemplate.close(rset);
+		}
+		return shr;
+		
+	}
+
+	public int writeAnswer(Connection conn, ShrTechAnswer sta) {
+		PreparedStatement pstmt=null;
+		int result =0;
+		String query = "insert into SHR_ANSWER values (ANSWER_SQ.NEXTVAL,?,sysdate,?,?,'N')";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setString(1, sta.getAnswCont());
+			pstmt.setInt(2, sta.getShrNo());
+			pstmt.setInt(3, sta.getMemberNo());
+			result=pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+		}
+		return result;
+		
+	}
+
+	//해당 게시글의 기술공유답변리스트
+	public ArrayList<ShrTechAnswer> srtAnswerList(Connection conn, int shareTechNo) {
+		PreparedStatement pstmt=null;
+		ResultSet rset=null;
+		String query = "select s.*,m.MEMBER_ID from SHR_ANSWER s, member m where s.MEMBER_NO=m.MEMBER_NO and s_no=?";
+		ArrayList<ShrTechAnswer> answerList= new ArrayList<ShrTechAnswer>();
+		ShrTechAnswer shr=null;
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setInt(1, shareTechNo);
+			
+			rset=pstmt.executeQuery();
+			while(rset.next()) {
+				shr=new ShrTechAnswer();
+				shr.setAnswNo(rset.getInt("answ_no"));
+				shr.setAnswCont(rset.getString("answ_cont"));
+				shr.setAnswDate(rset.getDate("answ_date"));
+				shr.setShrNo(rset.getInt("s_no"));
+				shr.setMemberNo(rset.getInt("member_no"));
+				shr.setMemberId(rset.getString("member_id"));
+				shr.setAnswAddopt(rset.getString("answ_adopt"));
+				answerList.add(shr);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+			JDBCTemplate.close(rset);
+		}
+		
+		return answerList;
 	}
 
 

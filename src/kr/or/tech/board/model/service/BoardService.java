@@ -8,6 +8,7 @@ import kr.or.tech.board.model.vo.MainpageBoard;
 import kr.or.tech.board.model.vo.NComment;
 import kr.or.tech.board.model.vo.Notice;
 import kr.or.tech.board.model.vo.ShrTech;
+import kr.or.tech.board.model.vo.ShrTechAnswer;
 import kr.or.tech.common.JDBCTemplate;
 
 public class BoardService {
@@ -159,5 +160,70 @@ public class BoardService {
 		
 		return shrList;
 	}
+
+	//----기술공유게시판----
+	
+	//기술공유게시글 작성
+	public int writeShareTech(ShrTech shr) {
+		
+		Connection conn = JDBCTemplate.getConnection();
+		int result = new BoardDao().writeShareTech(conn,shr);
+		
+		if(result>0) {
+			JDBCTemplate.commit(conn);
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		
+		JDBCTemplate.close(conn);
+		return result;
+	}
+
+	public ShrTech shareTechInfo(int shareTechNo, String boardCode) {
+		Connection conn = JDBCTemplate.getConnection();
+		
+		//조회수 증가
+		int shrHits=new BoardDao().changeShrHits(conn,shareTechNo,boardCode);
+		
+		if(shrHits>0) {
+			JDBCTemplate.commit(conn);
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		
+		ShrTech shr = new BoardDao().shareTechInfo(conn,shareTechNo,boardCode);
+		
+		JDBCTemplate.close(conn);
+		return shr;
+	}
+
+	//기술공유 게시판 답변 insert
+	public int writeAnswer(ShrTechAnswer sta) {
+		Connection conn = JDBCTemplate.getConnection();
+		
+		int result = new BoardDao().writeAnswer(conn,sta);
+		
+		if(result>0) {
+			JDBCTemplate.commit(conn);
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		
+		JDBCTemplate.close(conn);
+		
+		return result;
+		
+	}
+
+	//해당 게시글의 기술공유답변리스트
+	public ArrayList<ShrTechAnswer> srtAnswerList(int shareTechNo) {
+		Connection conn = JDBCTemplate.getConnection();
+		ArrayList<ShrTechAnswer> answerList = new BoardDao().srtAnswerList(conn,shareTechNo);
+		
+		JDBCTemplate.close(conn);
+		return answerList;
+	}
+
+	
 
 }

@@ -11,7 +11,7 @@
 <script src="js/bootstrap.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-<title>공지사항 글작성</title>
+<title>기술공유 글작성</title>
 
 <style>
 	.container{
@@ -35,26 +35,18 @@
 
 <div class="container">
 	<div class="row">
-		<form method="post" action="/noticeWrite.do" enctype="multipart/form-data">
+		<form method="post" action="/shareTechWrite.do" enctype="multipart/form-data">
 		<table class="table table-striped" style="text-align:center; border:1px solid #dddddd">
 			<thead>
 				<tr>
-					<th colspan="2" style="background-color : #eeeeee; text-align:center;"><h4>공지사항 작성</h4></th>
+					<th colspan="2" style="background-color : #eeeeee; text-align:center;"><h4>기술문의</h4></th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td width="20%">
-						<select name="category" class="form-control">
-							<option>-------------</option>
-	                    	<option value="general">일반</option>
-	                    	<option value="emergency">긴급</option>
-	                    	<option value="important">중요</option>
-                		</select>
-                	</td>
-					<td><input type="text" class="form-control" placeholder="글 제목" name="noticeTitle" maxlength="50"></td>
+					<td colspan="2"><input type="text" class="form-control" placeholder="글 제목" name="shareTechTitle" maxlength="50"></td>
 				<tr>
-					<td colspan="2"><textarea type="text" class="form-control" placeholder="글 내용" name="noticeContent" maxlength="2048" style="height:550px; resize: none;"></textarea></td>
+					<td colspan="2"><textarea type="text" class="form-control" placeholder="글 내용" name="shareTechContent" maxlength="2048" style="height:550px; resize: none;" ></textarea></td>
 				</tr>
 				<tr>
 					<td width="20%">첨부파일</td>

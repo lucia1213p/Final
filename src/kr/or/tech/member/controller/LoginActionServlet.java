@@ -47,7 +47,7 @@ public class LoginActionServlet extends HttpServlet {
 			
 			response.sendRedirect("/views/member/loginSuccess.jsp");
 		}else {
-			response.sendRedirect("/views/error/errorPage.jsp");
+			response.sendRedirect("/views/member/loginFailed.jsp");
 		}
 	}
 
