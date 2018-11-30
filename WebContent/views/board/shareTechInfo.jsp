@@ -23,39 +23,39 @@
 
 <title>기술공유 게시글</title>
 <style>
-
-.container{
-		padding-top:50px;
-}
-
-table tr td:nth-child(1){
-	font-weight: bold; 
-}
-#answerText{
-
-	color:#1294AB;
-	font-weight:bold;
-}
-.answer{
-
-	border:1px solid #578100;
-	margin-top:50px;
-}
-.answer-wrap{
-	padding:20px;
-}
-.top-answer{
- height:30%;
-}
-.top-left{
-	float:left;
-	width:70%;
-}
-.top-right{
-	float:right;
-	width:30%;
-}
-
+	
+	.container{
+			padding-top:50px;
+	}
+	
+	table tr td:nth-child(1){
+		font-weight: bold; 
+	}
+	#answerText{
+	
+		color:#1294AB;
+		font-weight:bold;
+	}
+	.answer{
+	
+		border:1px solid #578100;
+		margin-top:50px;
+	}
+	.answer-wrap{
+		padding:20px;
+	}
+	.top-answer{
+	 height:30%;
+	}
+	.top-left{
+		float:left;
+		width:70%;
+	}
+	.top-right{
+		float:right;
+		width:30%;
+	}
+	
 
 </style>
 
@@ -139,7 +139,7 @@ table tr td:nth-child(1){
 		 			  		<img src="/img/adopt.png" width="50" height="50">
 		 			  	<%}%>
 		 			  </div>
-		 			  </div>
+		 			 </div>
 		 			  <div class="content">
 		 			  	<hr>
 						<p class="comment-text" style="min-height:150px;"><%=sta.getAnswCont() %></p>
@@ -149,7 +149,7 @@ table tr td:nth-child(1){
 							<li class="complain"><a href="#" id="updateComment" onclick="updateCmt()">수정</a></li>
 							<li class="reply"><a href="#" onclick="delComment()">삭제</a></li>
 						</ul>
-					</div>
+					 </div>
 		 		</div>
 		 	  </div>
 		 	  <%}

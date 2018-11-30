@@ -47,7 +47,6 @@ public class ShareTechInfoServlet extends HttpServlet {
 			request.setAttribute("shrTech", shr);
 			request.setAttribute("answerList", answerList);
 			view.forward(request, response);
-			
 		}else {
 			//선택한 게시글을 찾을 수 없으면
 			System.out.println("게시글 찾을 수 없음");
@@ -62,5 +61,4 @@ public class ShareTechInfoServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
-
 }

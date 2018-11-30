@@ -102,21 +102,21 @@ table tr td:nth-child(1){
 				<%for(NComment nc : ncList) {%>
 					<div class="comments">
 						<div class="comment-wrap">
-								<div style="width:20%; float:left;" class="name">
-									<div><b><%=nc.getMemberName()%></b></div>
+							<div style="width:20%; float:left;" class="name">
+								<div><b><%=nc.getMemberName()%></b></div>
+							</div>
+							<div style="width:90%; float:left;" class="comment-block">
+								<p class="comment-text"><%=nc.getCommCont() %></p>
+								<div class="bottom-comment">
+									<div class="comment-date"><%=nc.getCommDate() %></div>
+									<%if(m.getMemberId().equals(nc.getMemberName())) {%>
+										<ul class="comment-actions">
+											<li class="complain"><a href="#" id="updateComment" onclick="updateCmt(<%=nc.getCommNo()%>)">수정</a></li>
+											<li class="reply"><a href="#" onclick="delComment(<%=nc.getCommNo()%>)">삭제</a></li>
+										</ul>
+								 	<%} %>
 								</div>
-								<div style="width:90%; float:left;" class="comment-block">
-										<p class="comment-text"><%=nc.getCommCont() %></p>
-										<div class="bottom-comment">
-												<div class="comment-date"><%=nc.getCommDate() %></div>
-												<%if(m.getMemberId().equals(nc.getMemberName())) {%>
-													<ul class="comment-actions">
-															<li class="complain"><a href="#" id="updateComment" onclick="updateCmt(<%=nc.getCommNo()%>)">수정</a></li>
-															<li class="reply"><a href="#" onclick="delComment(<%=nc.getCommNo()%>)">삭제</a></li>
-													</ul>
-											 	<%} %>
-										</div>
-								</div>
+							</div>
 						</div>
 					</div>
 				<%} %>
@@ -129,9 +129,8 @@ table tr td:nth-child(1){
 		//댓글 수정
 		function updateCmt(cmtNum){
 			 window.name = "parentForm";
-	            window.open("updateComment.do?num="+comment_num,
+	         window.open("updateComment.do?num="+comment_num,
 	                        "updateForm", "width=570, height=350, resizable = no, scrollbars = no");
-
 		}
 		function delComment(cmtNum){
 			if(confirm("댓글을 삭제하시겠습니까?")){
@@ -153,9 +152,8 @@ table tr td:nth-child(1){
 				});
 			}else{
 				return false;
-			}
-			
-		}
+			}			
+	   }
 	</script>
 </body>
 </html>
