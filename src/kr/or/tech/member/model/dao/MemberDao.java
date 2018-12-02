@@ -4,8 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import kr.or.tech.common.JDBCTemplate;
+import kr.or.tech.member.model.vo.BelongSelect;
 import kr.or.tech.member.model.vo.Member;
 
 public class MemberDao {
@@ -134,6 +136,61 @@ public class MemberDao {
 			JDBCTemplate.close(rset);
 		}
 		return memberId;
+	}
+
+	public ArrayList<BelongSelect> loadBelong(Connection conn, String selectGrade, String belongCode) {
+		PreparedStatement pstmt=null;
+		ResultSet rset=null;
+		BelongSelect belong=null;
+		ArrayList<BelongSelect> belongList= new ArrayList<BelongSelect>();
+		String query = "select * from MEM_BELONG where belong_field=?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setString(1, belongCode);
+			rset=pstmt.executeQuery();
+			
+			while(rset.next()) {
+				belong=new BelongSelect();
+				belong.setBelongCode(rset.getString("member_code"));
+				belong.setBelongName(rset.getString("belong_name"));
+				belongList.add(belong);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return belongList;
+	}
+
+	public int updateMember(Connection conn, Member member) {
+		PreparedStatement pstmt = null;
+
+		int result = 0;
+
+		String query = "update member set member_phone=?,member_email=?,member_addr=? "
+				+ " where member_no = ? ";
+
+		try {
+			pstmt = conn.prepareStatement(query);
+			pstmt.setString(1, member.getMemberPhone());
+			pstmt.setString(2, member.getMemberEmail());
+			pstmt.setString(3, member.getMemberAddr());
+			pstmt.setInt(4, member.getMemberNo());
+
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+
+		return result;
 	}
 
 }

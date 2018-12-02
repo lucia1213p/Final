@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import kr.or.tech.board.model.service.BoardService;
+import kr.or.tech.board.model.vo.NPageData;
 import kr.or.tech.board.model.vo.Notice;
 import kr.or.tech.member.model.vo.Member;
 
@@ -38,9 +39,18 @@ public class NoticeListServlet extends HttpServlet {
 		Member member = (Member)session.getAttribute("member");
 		
 		if(member!=null) {
-			ArrayList<Notice> list=new BoardService().noticeList();
+			//페이징 처리
+			int NoticeCurrentPage;
+			if(request.getParameter("noticeCurrentPage")==null) { //메인페이지에서 공지사항 페이지를 눌렀을 경우
+				NoticeCurrentPage=1;
+			}else {
+				NoticeCurrentPage=Integer.parseInt(request.getParameter("noticeCurrentPage"));
+			}
+			//비즈니스 로직 
+			NPageData npd=new BoardService().noticeList(NoticeCurrentPage);
+			
 			RequestDispatcher view = request.getRequestDispatcher("views/board/notice.jsp");
-			request.setAttribute("noticeList", list);
+			request.setAttribute("nPageData", npd);
 			view.forward(request, response);
 		}else {
 			response.sendRedirect("views/error/errorPage.jsp");

@@ -18,6 +18,8 @@
 	<!-- 헤더 내비 -->
 	<jsp:include page="/header.jsp" flush="false" />
 	
+	<!-- 푸터 내비 -->
+	<jsp:include page="/footer.jsp" flush="false" />
 	
 </body>
 </html>

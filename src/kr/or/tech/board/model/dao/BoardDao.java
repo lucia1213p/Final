@@ -41,42 +41,52 @@ public class BoardDao {
 			JDBCTemplate.close(pstmt);
 		}
 		return result;
-		
 	}
 
-	public int writeNoticeFile(Connection conn, Notice n) {
+	public int writeNoticeNotFile(Connection conn,int memberNo, Notice n) {
 		PreparedStatement pstmt=null;
 		int result = 0;
 		
-		String query = "insert into FILEINFO values(FILE_SQ.NEXTVAL,?,'notice',NOTICE_SQ.CURRVAL) ";
+		String query = "insert into notice values(NOTICE_SQ.NEXTVAL,?,?,sysdate,0,?,'notice',?,?,'N') ";
 		
 		try {
 			pstmt=conn.prepareStatement(query);
-			pstmt.setString(1, n.getNoticeFile());
+			pstmt.setString(1, n.getNoticeTitle());
+			pstmt.setString(2, n.getNoticeContent());
+			pstmt.setInt(3, memberNo);
+			pstmt.setString(4, n.getNoticeGrade());
+			pstmt.setString(5, n.getNoticeFile());
 			
-			result= pstmt.executeUpdate();
+			result=pstmt.executeUpdate();
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} finally {
+		}finally {
 			JDBCTemplate.close(pstmt);
 		}
-		
 		return result;
 	}
-
-	public ArrayList<Notice> noticeList(Connection conn) {
+	
+	//공지사항 목록 게시물 페이징
+	public ArrayList<Notice> noticeList(Connection conn,int noticeCurrentPage, int recordCountPerPage) {
 		
 		PreparedStatement pstmt=null;
 		ResultSet rset=null;
 		ArrayList<Notice> list = new ArrayList<Notice>();
 		Notice n = null;
 		
-		String query = "select n.*, g.GRADE_NAME, m.MEMBER_NAME from notice n, NOTICE_GRADE g , member m where n.MEMBER_NO=m.MEMBER_NO and g.N_GRADE=n.N_GRADE";
+		//시작 게시물 계산
+		int start = noticeCurrentPage*recordCountPerPage-(recordCountPerPage-1);
+		//끝 게시물
+		int end = noticeCurrentPage*recordCountPerPage;
+		
+		String query = "select * from (select row_number() over (order by n_no desc) num ,n.*, g.GRADE_NAME, m.MEMBER_NAME from notice n, NOTICE_GRADE g , member m where n.MEMBER_NO=m.MEMBER_NO and g.N_GRADE=n.N_GRADE) where num between ? and ?";
 		
 		try {
 			pstmt=conn.prepareStatement(query);
+			pstmt.setInt(1, start);
+			pstmt.setInt(2, end);
 			
 			rset=pstmt.executeQuery();
 			
@@ -108,6 +118,217 @@ public class BoardDao {
 		
 	}
 	
+	//공지사항목록 navi
+	public String getPageNavi(Connection conn, int noticeCurrentPage, int recordCountPerPage, int naviCountPerPage) {
+		PreparedStatement pstmt= null;
+		ResultSet rset = null;
+		
+		//게시물의 토탈 개수
+		int recordTotalCount=0;
+		String query ="select count(*) as totalcount from notice";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			rset = pstmt.executeQuery();
+			if(rset.next()) {
+				recordTotalCount= rset.getInt("totalcount");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		//페이지 총 개수
+		int pageTotalCount = 0;
+		
+		if(recordTotalCount % recordCountPerPage!=0) {
+			pageTotalCount = recordTotalCount / recordCountPerPage + 1;
+		}else {
+			pageTotalCount = recordTotalCount / recordCountPerPage;
+		}
+		
+		//에러방지 코드
+		if(noticeCurrentPage<1) {
+			noticeCurrentPage=1;
+		}else if(noticeCurrentPage>pageTotalCount){
+			noticeCurrentPage = pageTotalCount;
+		}
+		
+		//시작페이지 구하기
+		int startNavi = ((noticeCurrentPage-1)/naviCountPerPage)*naviCountPerPage+1;
+		//끝페이지 구하기
+		int endNavi = startNavi + naviCountPerPage -1;
+		
+		// 끝 navi를 구할 때 주의해야할점
+		// 토탈 개수가 122개라면 총 토탈페이지는 13개 만들어져야함
+		// 11 12 13 14 15
+		// 토탈 페이지를 고려하지 않고 만들게 되면 끝 navi가 이상하게구해질 수 있음
+		if(endNavi>pageTotalCount) {
+			endNavi=pageTotalCount;
+		}
+		
+		//'<'과 '>'
+		boolean needPrev = true;
+		boolean needNext = true;
+		
+		if(startNavi==1) {needPrev = false;}
+		if(endNavi==pageTotalCount) {needNext=false;}
+		
+		StringBuilder sb = new StringBuilder();
+		//needPrev는 시작페이지가 1이면 false, 시작페이지가 1이 아니라면 true
+		if(needPrev==true) {
+			sb.append("<a href='/noticeList.do?noticeCurrentPage="+(startNavi-1)+"'> << </a> ");
+		}
+		for(int i = startNavi;i<=endNavi;i++) {
+			if(i==noticeCurrentPage) {
+				sb.append("<a href='/noticeList.do?noticeCurrentPage="+i+"'><b>"+i+"</b></a>");
+			}else {
+				sb.append("<a href='/noticeList.do?noticeCurrentPage="+i+"'>"+i+"</a> ");
+			}
+		}
+
+		if(needNext) {
+			sb.append("<a href='/noticeList.do?noticeCurrentPage="+(endNavi+1)+"'> >> </a> ");
+		}
+		return sb.toString();
+	}
+	
+	//공지사항 검색 페이징
+	public ArrayList<Notice> noticeSearchList(Connection conn, String keyword, String selectSearch,
+		    int nSearchCurrentPage, int recordCountPerPage) {
+		
+		PreparedStatement pstmt=null;
+		ResultSet rset=null;
+		ArrayList<Notice> list = new ArrayList<Notice>();
+		Notice n = null;
+		
+		//시작 게시물 계산
+		int start = nSearchCurrentPage*recordCountPerPage-(recordCountPerPage-1);
+		//끝 게시물
+		int end = nSearchCurrentPage*recordCountPerPage;
+		
+		String query = "select * from (select row_number() over (order by n_no desc) num ,n.*, g.GRADE_NAME, m.member_name from notice n, NOTICE_GRADE g , member m where n.MEMBER_NO=m.MEMBER_NO and g.N_GRADE=n.N_GRADE and ? like ?) where num between ? and ?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setString(1, selectSearch);
+			pstmt.setString(2, '%'+keyword+'%');
+			pstmt.setInt(3, start);
+			pstmt.setInt(4, end);
+			
+			rset=pstmt.executeQuery();
+			
+			while(rset.next()) {
+				n = new Notice();
+				n.setNoticeNo(rset.getInt("n_no"));
+				n.setNoticeTitle(rset.getString("n_title"));
+				n.setNoticeContent(rset.getString("n_cont"));
+				n.setNoticeDate(rset.getDate("n_date"));
+				n.setNoticeHits(rset.getInt("n_hits"));
+				n.setMemberNo(rset.getInt("member_no"));
+				n.setMemberName(rset.getString("member_name"));
+				n.setBoardCode(rset.getString("b_code"));
+				n.setNoticeFile(rset.getString("n_file"));
+				n.setNoticeGrade(rset.getString("n_grade"));
+				n.setNoticeGradeName(rset.getString("grade_name"));
+				
+				list.add(n);
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		return list;
+	}
+	//공지사항 검색 내비
+	public String getNoticeSearchPageNavi(Connection conn, String keyword, String selectSearch, int nSearchCurrentPage,
+			int recordCountPerPage, int naviCountPerPage) {
+		
+		PreparedStatement pstmt= null;
+		ResultSet rset = null;
+		
+		//게시물의 토탈 개수
+		int recordTotalCount=0;
+		String query ="select count(*) as totalcount from notice n, member m where n.MEMBER_NO=m.MEMBER_NO and ? like ?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setString(1, selectSearch);
+			pstmt.setString(2, '%'+keyword+'%');
+			
+			rset = pstmt.executeQuery();
+			if(rset.next()) {
+				recordTotalCount= rset.getInt("totalcount");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		//페이지 총 개수
+		int pageTotalCount = 0;
+		
+		if(recordTotalCount % recordCountPerPage!=0) {
+			pageTotalCount = recordTotalCount / recordCountPerPage + 1;
+		}else {
+			pageTotalCount = recordTotalCount / recordCountPerPage;
+		}
+		
+		//에러방지 코드
+		if(nSearchCurrentPage<1) {
+			nSearchCurrentPage=1;
+		}else if(nSearchCurrentPage>pageTotalCount){
+			nSearchCurrentPage = pageTotalCount;
+		}
+		
+		//시작페이지 구하기
+		int startNavi = ((nSearchCurrentPage-1)/naviCountPerPage)*naviCountPerPage+1;
+		//끝페이지 구하기
+		int endNavi = startNavi + naviCountPerPage -1;
+		
+		// 끝 navi를 구할 때 주의해야할점
+		// 토탈 개수가 122개라면 총 토탈페이지는 13개 만들어져야함
+		// 11 12 13 14 15
+		// 토탈 페이지를 고려하지 않고 만들게 되면 끝 navi가 이상하게구해질 수 있음
+		if(endNavi>pageTotalCount) {
+			endNavi=pageTotalCount;
+		}
+		
+		//'<'과 '>'
+		boolean needPrev = true;
+		boolean needNext = true;
+		
+		if(startNavi==1) {needPrev = false;}
+		if(endNavi==pageTotalCount) {needNext=false;}
+		
+		StringBuilder sb = new StringBuilder();
+		//needPrev는 시작페이지가 1이면 false, 시작페이지가 1이 아니라면 true
+		if(needPrev==true) {
+			sb.append("<a href='/noticeSearch.do?searchCurrentPage="+(startNavi-1)+"'> << </a> ");
+		}
+		for(int i = startNavi;i<=endNavi;i++) {
+			if(i==nSearchCurrentPage) {
+				sb.append("<a href='/noticeSearch.do?searchCurrentPage="+i+"'><b>"+i+"</b></a>");
+			}else {
+				sb.append("<a href='/noticeSearch.do?searchCurrentPage="+i+"'>"+i+"</a> ");
+			}
+		}
+
+		if(needNext) {
+			sb.append("<a href='/noticeSearch.do?searchCurrentPage="+(endNavi+1)+"'> >> </a> ");
+		}
+		return sb.toString();
+	}
 	
 	//조회수 증가
 	public int changeHits(Connection conn, int noticeNo, String boardCode) {
@@ -570,6 +791,9 @@ public class BoardDao {
 		
 		return answerList;
 	}
+
+
+
 
 
 }

@@ -123,9 +123,43 @@
 				});
 			}
 		});
+		
 	});
 	
-	
+	/* 하위 셀렉트 가져오기 */
+	$('#selectGrade').change(function(){
+		$('#selectBelong').find('option').each(function(){
+			$(this).remove();
+		});
+		$('#selectBelong').append("<option value=''>---- SELECT ----</option>");
+		
+		var selectGrade=$(this).val();
+		if(selectGrade!=""){
+			var params=$('selectGrade').serialize();
+			$.ajax({
+				type:'POST',
+				url:'/belongLoad.do',
+				data:params,
+				dataType:'json',
+				success:function(data){
+					console.log('success');
+					var result=new Array();
+					result=data.result.belongList;
+					console.log(result[0].BelongCode);
+					if(data==null){
+						data=0;
+					}
+					for(var i=0;i<data.length;i++){
+						$('#selectBelong').append("<option value='"+result.BelongCode+"'>"+result.BelongName+"</option>");
+					}
+				},
+				error:function(){
+					location.href="/views/error/errorPage.jsp"
+				}
+			});
+		}
+	}
+		
 </script>
 <!-- 헤더 내비 -->
 <jsp:include page="/header.jsp" flush="false" />
@@ -144,19 +178,15 @@
                <form action="/registerAction.do" method="post" name="login">
                	  <div class="form-group">
                	  	<label for="inputId">등급 / 소속</label>
-               	  	<select name="grade"class="selectpicker">
+               	  	<select name="grade" id="selectGrade" class="selectpicker">
+               	  		<option value="">Select Grade</option>
                	  		<option value="HA">홈페이지 관리자</option>
                	  		<option value="MA">제조사 관리자</option>
                	  		<option value="ME">제조사 엔지니어</option>
                	  		<option value="PE">협력사 엔지니어</option>
                	  	</select>
-               	  	<select name="belong"class="selectpicker">
-               	  		<option value="ABC Manufacturer">ABC 제조사</option>
-               	  		<option value="A_Partner">A협력사</option>
-               	  		<option value="B_Partner">B협력사</option>
-               	  		<option value="C_Partner">C협력사</option>
-               	  		<option value="D_Partner">D협력사</option>
-               	  		<option value="E_Partner">E협력사</option>
+               	  	<select name="belong" id="selectBelong" class="selectpicker">
+               	  		<option value="">Select Belong</option>
                	  	</select>
                	  </div>
                   <div class="form-group">
@@ -210,5 +240,9 @@
             </div>
          </div>
       </div>
+      
+<!-- 푸터 내비 -->
+<jsp:include page="/footer.jsp" flush="false" />
+	
 </body>
 </html>

@@ -45,39 +45,49 @@ table tr td:nth-child(1){
 	
 	<div class="container">
 		<div class="row">
+		  <form action="/views/board/noticeUpdate.jsp" method="post">
 			<table class="table table-striped" style="text-align:center; border:1px solid #dddddd">
 				<thead>
 					<tr>
 						<th colspan="3" style="background-color: #eeeeee; text-align :center;">공지사항 게시글</th>
 					</tr>
 				</thead>
-				<tbody>
+				
+				<tbody id="titleInfo">
 					<tr>
+						<input type="hidden" name="noticeNo" value="<%=n.getNoticeNo() %>">
 						<td style="width :20%;">제목</td>
-						<td colspan="2"><%= n.getNoticeTitle()%></td>
+						<td colspan="2" name="title"><%= n.getNoticeTitle()%></td>
 					</tr>
+					
 					<tr>
 						<td>작성자</td>
-						<td colspan="2"><%= n.getMemberName()%></td>
+						<td colspan="2" name="writer"><%= n.getMemberName()%></td>
+						
 					</tr>
 					<tr>
 						<td>작성일자 </td>
-						<td colspan="2"><%= n.getNoticeDate()%></td>
+						<td colspan="2" name="date"><%= n.getNoticeDate()%></td>
 					</tr>
 					<tr>
 						<td>내용</td>
-						<td colspan="2"><div style="min-height: 200px; text-align: left;"><%=n.getNoticeContent()%></div></td>
+						<td colspan="2" name="contents"><div style="min-height: 200px; text-align: left;"><%=n.getNoticeContent()%></div></td>
 					</tr>
 					<tr>
 						<td>첨부파일</td>
-						<td colspan="2"><a href="/nFileDown.do?fileName=<%=n.getNoticeFile() %>"><%=n.getNoticeFile() %></a></td>
+						<%if(n.getNoticeFile()==null){%>
+						<td colspan="2"></td>
+						<%}else{ %>
+						<td colspan="2" name="fileName"><a href="/nFileDown.do?fileName=<%=n.getNoticeFile() %>"><%=n.getNoticeFile() %></a></td>
+						<%} %>
 					</tr>
 				</tbody>
-			</table>
+			  </table>
+			</form>
 				<a href="/noticeList.do" class="btn btn-primary btn-sm active">목록</a>
 				<!-- (수정) 글 작성자나 관리자가 아니면 수정,삭제 못하게 -->
-				<a href="#" class="btn btn-primary btn-sm active">수정</a>
-				<a href="#" class="btn btn-primary btn-sm active">삭제</a>
+				 <a href="/views/board/noticeUpdate.jsp?noticeNo=<%=n.getMemberNo()%>&boardCode=<%=n.getBoardCode() %>" class="btn btn-primary btn-sm active">수정</a>
+				<a href="/noticeDelete.do?noticeNo=<%=n.getMemberNo()%>" class="btn btn-primary btn-sm active">삭제</a>
 		</div>
 	</div>
 	<div class="container">
@@ -88,7 +98,7 @@ table tr td:nth-child(1){
 						<textarea id="comment" name="comment" class="form-control" rows="3" style="resize:none;margin:0px;"></textarea>
 						<input type="hidden" name="boardCode" value="<%=n.getBoardCode() %>"/>
 						<input type="hidden" name="noticeNo" value="<%=n.getNoticeNo()%>"/>
-						<input type="submit" class="btn pull-right" value="댓글작성"/>
+						<button id="cmtBtn" class="btn pull-right" onclick="return cmtCheck();">댓글작성</button>
 					</div>
 				<%}else{ %>
 					<div class="commentWrite">
@@ -111,7 +121,7 @@ table tr td:nth-child(1){
 									<div class="comment-date"><%=nc.getCommDate() %></div>
 									<%if(m.getMemberId().equals(nc.getMemberName())) {%>
 										<ul class="comment-actions">
-											<li class="complain"><a href="#" id="updateComment" onclick="updateCmt(<%=nc.getCommNo()%>)">수정</a></li>
+											<li class="complain"><a href="#" id="updateComment" >수정</a></li>
 											<li class="reply"><a href="#" onclick="delComment(<%=nc.getCommNo()%>)">삭제</a></li>
 										</ul>
 								 	<%} %>
@@ -126,6 +136,17 @@ table tr td:nth-child(1){
 		</div>
 	</div>
 	<script>
+		//댓글입력 확인
+		
+		function cmtCheck(){
+			var comment = document.getElementById("comment").value;
+			if(comment==""){
+				alert("댓글을 입력해주세요");
+				return false;
+			}else{
+				{return true;}
+			}
+		}
 		//댓글 수정
 		function updateCmt(cmtNum){
 			 window.name = "parentForm";
@@ -155,5 +176,9 @@ table tr td:nth-child(1){
 			}			
 	   }
 	</script>
+	
+<!-- 푸터 내비 -->
+<jsp:include page="/footer.jsp" flush="false" />
+	
 </body>
 </html>

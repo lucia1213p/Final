@@ -5,8 +5,11 @@
 	     import="java.util.ArrayList"
 %>
 <%
-ArrayList<Notice> list = (ArrayList<Notice>)request.getAttribute("noticeList");
-Member m = ((Member)request.getSession(false).getAttribute("member"));
+	NPageData npd = (NPageData)request.getAttribute("nPageData");
+ 
+	ArrayList<Notice> list = npd.getList();
+	String pageNavi = npd.getPageNavi();
+	Member m = ((Member)request.getSession(false).getAttribute("member"));
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -68,7 +71,7 @@ Member m = ((Member)request.getSession(false).getAttribute("member"));
                 <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a></td>
                 <td class="text-center"><a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
            		<td><%=n.getNoticeHits() %></td>
-           	<%if(m.getMemberGrade().equals("HA")||m.getMemberGrade().equals("MA")) {%>
+           	<%if(m.getMemberGrade().equals("HA")||m.getMemberGrade().equals("MA")){%>
            		<td><button onclick="selectNotice(<%=n.getNoticeNo() %>)" class="btn btn-primary">선택</button></td>
            	<%} %>
             </tr>
@@ -96,44 +99,34 @@ Member m = ((Member)request.getSession(false).getAttribute("member"));
 	  </div>
 	   <div class="row">              
 		  <ul class="pagination">
-		  	<li><a href="#">«</a></li>
-		    <li><a href="#">1</a></li>
-		    <li><a href="#">2</a></li>
-		    <li><a href="#">3</a></li>
-		    <li><a href="#">4</a></li>
-		    <li><a href="#">5</a></li>
-		    <li><a href="#">»</a></li>
+		  	<li><%=pageNavi%></li>
 		  </ul>
 	  </div>
 	  
 	   <div class="row">    
         <div class="col-sm-12 pull-center well">
-        <form class="form-inline" action="#" method="POST">
+        <form class="form-inline" id="searchBtn" action="/noticeSearch.do" method="POST">
             <center>  
-                <select class="form-control">
-                	<option>----------</option>
-                    <option>작성자</option>
-                    <option>제목</option>
+                <select name="selectSearch" class="form-control">
+                    <option value="writer">작성자</option>
+                    <option value="title">제목</option>
                 </select>
                     
-                <div class="input-group custom-search-form">
-                     <input type="text" class="form-control" placeholder="Search...">
-                         <!-- 
-                         	<span class="input-group-btn">
-			                  <button class="btn btn-default" id="writeBtn" type="button"><span class="glyphicon glyphicon-search"></span></button>
-                        	</span>
-                          -->
-                          <span class="input-group-btn">
-			                  <button class="btn btn-default" id="writeBtn" type="button"><span class="glyphicon glyphicon-search"></span></button>
-                          </span>
-                </div>
+                   <input type="text" name="search" class="form-control" placeholder="Search...">
+			        <button class="btn btn-default form-control" id="writeBtn" onclick="document.getElementById('searchBtn').submit();" type="button"><span class="glyphicon glyphicon-search"></span></button>
+                    
             </center>
         </form>
     	</div>
 	</div>
 	 </div>
 
+<!-- 푸터 내비 -->
+<jsp:include page="/footer.jsp" flush="false" />
+	
+	
 <script>
+   
 	$('#writeBtn').click(function(){
 		location.href="/views/board/noticeWrite.jsp";
 	});
@@ -146,7 +139,7 @@ Member m = ((Member)request.getSession(false).getAttribute("member"));
 				type:"post",
 				data:{noticeNo:noticeNo},
 				success:function(result){
-					if(result=true){
+					if(result==true){
 						alert("선택 완료");
 						location.reload();
 					}else{
@@ -162,5 +155,6 @@ Member m = ((Member)request.getSession(false).getAttribute("member"));
 		}
 	}
 </script>
+
 </body>
 </html>

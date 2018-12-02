@@ -151,5 +151,8 @@
 	</div>
 </div>
 
+<!-- 푸터 내비 -->
+<jsp:include page="/footer.jsp" flush="false" />
+	
 </body>
 </html>

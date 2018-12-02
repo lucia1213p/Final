@@ -36,7 +36,6 @@
 		if(window.confirm("회원 가입을 승인하시겠습니까?")){
 			location.href="/memberApprove.do?memNo="+memberNo;
 		}else{
-			
 			return false;
 		}
 	}
@@ -131,6 +130,9 @@
     	</div>
 	</div>
    </div>
-
+   
+<!-- 푸터 내비 -->
+<jsp:include page="/footer.jsp" flush="false" />
+	
 </body>
 </html>

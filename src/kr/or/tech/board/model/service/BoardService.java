@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import kr.or.tech.board.model.dao.BoardDao;
 import kr.or.tech.board.model.vo.MainpageBoard;
 import kr.or.tech.board.model.vo.NComment;
+import kr.or.tech.board.model.vo.NPageData;
 import kr.or.tech.board.model.vo.Notice;
 import kr.or.tech.board.model.vo.ShrTech;
 import kr.or.tech.board.model.vo.ShrTechAnswer;
@@ -15,8 +16,13 @@ public class BoardService {
 	//공지사항 글 작성
 	public int writeNotice(int memberNo, Notice n) {
 		Connection conn = JDBCTemplate.getConnection();
+		int result = 0;
 		
-		int result = new BoardDao().writeNotice(conn,memberNo,n);
+		if(n.getNoticeFile()!=null) {
+			result = new BoardDao().writeNotice(conn,memberNo,n);
+		}else {
+			result = new BoardDao().writeNoticeNotFile(conn,memberNo,n);
+		}
 		
 		if(result>0) {
 			JDBCTemplate.commit(conn);
@@ -30,22 +36,59 @@ public class BoardService {
 	}
 	
 	//공지사항목록
-	public ArrayList<Notice> noticeList() {
+	public NPageData noticeList(int noticeCurrentPage) {
 		
 		Connection conn =JDBCTemplate.getConnection();
 		
-		ArrayList<Notice> list=new BoardDao().noticeList(conn);
+		//게시물개수와 navi 개수 지정
+		int recordCountPerPage = 1;
+		int naviCountPerPage =5;
 		
-		if(list.isEmpty()) {
-			System.out.println("리스트비어있음");
+		//현재페이지의 게시물 리스트 
+		ArrayList<Notice> list=new BoardDao().noticeList(conn,noticeCurrentPage,recordCountPerPage);
+		String pageNavi = new BoardDao().getPageNavi(conn,noticeCurrentPage,recordCountPerPage,naviCountPerPage);
+		
+		NPageData npd=null;
+		
+		if(!list.isEmpty() && !pageNavi.isEmpty()) {
+			npd= new NPageData();
+			npd.setList(list);
+			npd.setPageNavi(pageNavi);
 		}else {
-			System.out.println("데이터들어옴");
+			System.out.println("데이터없음");
 		}
 		JDBCTemplate.close(conn);
 		
-		return list;
+		return npd;
 		
 	}
+	
+	//공지사항 검색
+	public NPageData noticeSearchList(String keyword, String selectSearch, int NSearchCurrentPage) {
+		Connection conn = JDBCTemplate.getConnection();
+		
+		//게시물개수와 navi 개수 지정
+		int recordCountPerPage = 1;
+		int naviCountPerPage =5;
+		
+		//현재페이지의 게시물 리스트 
+		ArrayList<Notice> list=new BoardDao().noticeSearchList(conn,keyword,selectSearch,NSearchCurrentPage,recordCountPerPage);
+		String pageNavi = new BoardDao().getNoticeSearchPageNavi(conn,keyword,selectSearch,NSearchCurrentPage,recordCountPerPage,naviCountPerPage);
+		
+		NPageData npd=null;
+		
+		if(!list.isEmpty() && !pageNavi.isEmpty()) {
+			npd= new NPageData();
+			npd.setList(list);
+			npd.setPageNavi(pageNavi);
+		}
+		
+		JDBCTemplate.close(conn);
+		
+		return npd;
+		
+	}
+	
 	
 	//공지사항글보기
 	public Notice noticeInfo(int noticeNo, String boardCode) {
@@ -223,6 +266,8 @@ public class BoardService {
 		JDBCTemplate.close(conn);
 		return answerList;
 	}
+
+
 
 	
 

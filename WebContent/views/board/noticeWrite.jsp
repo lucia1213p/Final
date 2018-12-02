@@ -28,6 +28,9 @@
             var fileName = e.target.files[0].name;
             $("#label").attr('placeholder',fileName);
         });
+        $('#resetFile').onclick(function(){
+        	document.getElementById("fileName").value = "";
+        });
     });
 </script>
 <!-- 헤더 내비 -->
@@ -53,20 +56,22 @@
                 		</select>
                 	</td>
 					<td><input type="text" class="form-control" placeholder="글 제목" name="noticeTitle" maxlength="50"></td>
+				</tr>
 				<tr>
 					<td colspan="2"><textarea type="text" class="form-control" placeholder="글 내용" name="noticeContent" maxlength="2048" style="height:550px; resize: none;"></textarea></td>
 				</tr>
 				<tr>
-					<td width="20%">첨부파일</td>
+					<td width="10%">첨부파일</td>
 					<td>
 						<div class="input-group">
 					        <label id="browsebutton" class="btn btn-default input-group-addon" for="my-file-selector" style="background-color:white">
-					            <input id="my-file-selector" type="file" accept=".jpg, .gif, .png, .zip" name="fileName" style="display:none; ">
+					            <input id="my-file-selector" type="file" accept=".jpg, .gif, .png, .zip" id="fileName" name="fileName" style="display:none; ">
 					            <span class="glyphicon glyphicon-folder-open"></span>
                         		<span class="image-preview-input-title">Browse</span>
 					        </label>
 					        <input id="label" type="text" class="form-control" readonly="">
 					    </div>
+					  <!--   <input type="button" id="resetFile" value="취소"> -->
 			       </td>
 				</tr>
 			</tbody>
@@ -75,5 +80,9 @@
 		</form>
 	</div>
 </div>
+
+<!-- 푸터 내비 -->
+<jsp:include page="/footer.jsp" flush="false" />
+	
 </body>
 </html>

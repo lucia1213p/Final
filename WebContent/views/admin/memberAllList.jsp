@@ -32,6 +32,9 @@
 	table tr:nth-child(1){
 		background-color:#269BAF;
 	}
+	table tr{
+		text-align:center;
+	}
 </style>
 
 </head>
@@ -44,24 +47,24 @@
 		<table class="table table-bordered table-hover">
 		<thead class="table">
 			<tr>
-				<th>회원번호</th>
-				<th>아이디</th>
-				<th>이름</th>
-				<th>회원등급</th>
-				<th>소속부서</th>
-				<th>가입일</th>
-				<th>탈퇴</th>
+				<th class="text-center">회원번호</th>
+				<th class="text-center">아이디</th>
+				<th class="text-center">이름</th>
+				<th class="text-center">회원등급</th>
+				<th class="text-center">소속부서</th>
+				<th class="text-center">가입일</th>
+				<th class="text-center">탈퇴</th>
 			</tr>
 			<%if(!list.isEmpty()) {%>
 				<%for(Member m : list) {%>
 				<tr>
-						<td><%=m.getMemberNo() %></td>
+						<td><a href="/adMemberInfo.do?memberNo=<%=m.getMemberNo() %>" id="memberNo"><%=m.getMemberNo() %></a></td>
 						<td><%=m.getMemberId() %></td>
 						<td><%=m.getMemberName() %></td>
 						<td><%=m.getMemberGrade() %></td>
 						<td><%=m.getMemCode() %></td>
 						<td><%=m.getMemberJoin() %></td>
-						<td><button>탈퇴</button></td>
+						<td><button type="button" onclick="delMember(<%=m.getMemberNo() %>)" class="btn btn-danger">탈퇴</button></td>
 				</tr>
 					<%} %>
 				<%}else{%>
@@ -115,5 +118,34 @@
     	</div>
 	</div>
    </div>
+   
+<!-- 푸터 내비 -->
+<jsp:include page="/footer.jsp" flush="false" />
+	
+	
+<script>
+	function delMember(memberNo){
+		if(confirm("회원을 탈퇴시키겠습니까?")){
+			$.ajax({
+				url:"/adMemberDelete.do",
+				type:"post",
+				data:{memberNo:memberNo},
+				success:function(result){
+					if(result==1){
+						alert("탈퇴 완료");
+						location.reload();
+					}else{
+						alert("탈퇴 실패");
+					}
+				},
+				error:function(){
+					location.href="/views/error/errorPage.jsp"	;
+				}
+			});
+		}else{
+			return false;
+		}
+	}
+</script>
 </body>
 </html>

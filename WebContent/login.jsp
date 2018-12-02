@@ -97,7 +97,7 @@
 	                      <label for="key" class="sr-only">Password</label>
 	                      <input type="password" name="password" id="password" class="form-control" placeholder="비밀번호를 입력하세요">
 	                  </div>
-	                  <input type="submit" id="btn-login" class="btn btn-custom btn-lg btn-block" value="Log in">
+	                  <button id="btn-login" class="btn btn-custom btn-lg btn-block" onclick="return logCheck();">Log in</button>
 	              </form>
 		              <a href="javascript:;" class="forget" data-toggle="modal" data-target=".forget-modal">Forgot your password?</a>
 		              <a href="/views/member/register.jsp" class="register" >Register</a>
@@ -106,8 +106,27 @@
 			</div>
 		</section>
 	</div>
-	<%-- 
-	<!-- 푸터 -->
-	<jsp:include page="footer.jsp" flush="false" /> --%>
+	<script>
+		function logCheck(){
+			var userId = document.getElementById("id").value;
+			var userPwd = document.getElementById("password").value;
+			
+			if(userId=="")
+				{
+					alert("ID를 입력해주세요");
+					return false;
+				}else if(userPwd=="")
+				{
+					alert("비밀번호를 입력해주세요");
+					return false;
+				}else
+					{return true;}
+		}
+	</script>
+	
+	<!-- 푸터 내비 -->
+	<jsp:include page="/footer.jsp" flush="false" />
+	
 </body>
+
 </html>

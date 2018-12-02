@@ -75,6 +75,7 @@
 				<td></td>
 				<td></td>
 				<td></td>
+				<td></td>
 			</tr>	
 		<%} %>
 	 </tbody>
@@ -130,5 +131,10 @@
 			location.href="/views/board/shareTechWrite.jsp";
 		});
    </script>
+   
+   
+   <!-- 푸터 내비 -->
+<jsp:include page="/footer.jsp" flush="false" />
+	
 </body>
 </html>

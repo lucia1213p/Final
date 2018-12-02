@@ -45,7 +45,7 @@ public class MemberInfoServlet extends HttpServlet {
 				response.sendRedirect("/views/error/errorPage.jsp");
 			}
 		}else {
-			response.sendRedirect("/views/error/errorPage.jsp");
+			response.sendRedirect("/index.jsp");
 		}
 
 	}

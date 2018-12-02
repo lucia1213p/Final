@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import kr.or.tech.admin.model.dao.AdminMemberDao;
 import kr.or.tech.common.JDBCTemplate;
+import kr.or.tech.member.model.dao.MemberDao;
 import kr.or.tech.member.model.vo.Member;
 
 public class AdminMemberService {
@@ -52,6 +53,43 @@ public class AdminMemberService {
 			JDBCTemplate.rollback(conn);
 		}
 		JDBCTemplate.close(conn);
+		return result;
+	}
+
+	public Member adMemberInfo(int memberNo) {
+		Connection conn = JDBCTemplate.getConnection();
+		
+		Member member = new AdminMemberDao().adMemberInfo(conn, memberNo);
+		
+		JDBCTemplate.close(conn);
+		
+		return member;
+	}
+
+	public int deleteMember(int memberNo) {
+		Connection conn = JDBCTemplate.getConnection();
+		
+		int result = new AdminMemberDao().deleteMember(conn,memberNo);
+		if(result>0) {
+			JDBCTemplate.commit(conn);
+			
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		JDBCTemplate.close(conn);
+		return result;
+	}
+
+	public int adUpdateMember(Member member) {
+		Connection conn = JDBCTemplate.getConnection();
+		int result = new AdminMemberDao().adUpdateMember(conn,member);
+		if(result>0) {
+			JDBCTemplate.commit(conn);
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		JDBCTemplate.close(conn);
+		
 		return result;
 	}
 
