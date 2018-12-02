@@ -54,9 +54,9 @@ ul, ol {
           <div class="row row-30">
             <div class="col-md-4 col-xl-5">
               <div class="pr-xl-4"><a class="brand" href="index.html"><img class="brand-logo-light" src="images/agency/logo-inverse-140x37.png" alt="" width="140" height="37" srcset="images/agency/logo-retina-inverse-280x74.png 2x"></a>
-                <p>We are an award-winning creative agency, dedicated to the best result in web design, promotion, business consulting, and marketing.</p>
+                <p> KH Information Educational Institute. Technical Information Site. Manufacturers and partners can share technology.</p>
                 <!-- Rights-->
-                <p class="rights"><span>©  </span><span class="copyright-year">2018</span><span> </span><span>Waves</span><span>. </span><span>All Rights Reserved.</span></p>
+                <p class="rights"><span>©  </span><span class="copyright-year">2018</span><span> </span><span>Technical Site</span></p>
               </div>
             </div>
             <div class="col-md-4">
@@ -71,18 +71,17 @@ ul, ol {
               </dl>
               <dl class="contact-list">
                 <dt>phones:</dt>
-                <dd><a href="tel:#">01011112222</a> <span>or</span> <a href="tel:#">01077788999</a>
+                <dd><a href="tel:#">01012349876</a>
                 </dd>
               </dl>
             </div>
             <div class="col-md-4 col-xl-3">
               <h5>Links</h5>
               <ul class="nav-list">
-                <li><a href="#">About</a></li>
-                <li><a href="#">Projects</a></li>
-                <li><a href="#">Blog</a></li>
-                <li><a href="#">Contacts</a></li>
-                <li><a href="#">Pricing</a></li>
+                <li><a href="#">Notice</a></li>
+                <li><a href="#">TechShare</a></li>
+                <li><a href="#">TechSupport</a></li>
+                <li><a href="#">MyPage</a></li>
               </ul>
             </div>
           </div>
