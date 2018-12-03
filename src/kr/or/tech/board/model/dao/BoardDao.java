@@ -656,7 +656,32 @@ public class BoardDao {
 	//기술공유게시글 작성
 	public int writeShareTech(Connection conn, ShrTech shr) {
 		PreparedStatement pstmt=null;
-		String query="insert into SHR_TECH values(SHARE_SQ.NEXTVAL,?,?,sysdate,0,?,'share',?,'N')";
+		String query="insert all into SHR_TECH values(SHARE_SQ.NEXTVAL,?,?,sysdate,0,?,'share',?,'N') "
+				+ "into FILEINFO values(FILE_SQ.NEXTVAL,?,'share',SHARE_SQ.CURRVAL) "
+				+ "select * from dual";
+		int result=0;
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setString(1, shr.getShareTitle());
+			pstmt.setString(2, shr.getShareCont());
+			pstmt.setInt(3, shr.getMemberNo());
+			pstmt.setString(4, shr.getFileName());
+			pstmt.setString(5, shr.getFileName());
+			
+			result=pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+		}
+		return result;
+	}
+
+	//기술공유게시글 작성(파일 없을 경우)
+	public int writeShareTechNotFile(Connection conn, ShrTech shr) {
+		PreparedStatement pstmt=null;
+		String query="insert into SHR_TECH values(SHARE_SQ.NEXTVAL,?,?,sysdate,0,?,'share',?,'N') ";
 		int result=0;
 		try {
 			pstmt=conn.prepareStatement(query);
@@ -674,8 +699,6 @@ public class BoardDao {
 		}
 		return result;
 	}
-
-
 	//기술공유 게시글 조회수 증가
 	public int changeShrHits(Connection conn, int shareTechNo, String boardCode) {
 		PreparedStatement pstmt=null;
@@ -892,9 +915,9 @@ public class BoardDao {
 		SupportTech spt=null;
 		ArrayList<SupportTech> sptList = new ArrayList<SupportTech>();
 		
-		String query ="select s.*, t.STATENAME,m1.MEMBER_ID,m1.MEMBER_CODE,m2.MEMBER_ID,m2.MEMBER_CODE from SPT_TECH s,SPT_STATE t, member m1,member m2 "
+		String query ="select s.*, t.STATENAME,m1.MEMBER_ID,m1.MEMBER_CODE,m2.MEMBER_ID as m_clerkId,m2.MEMBER_CODE as m_clerkCode from SPT_TECH s,SPT_STATE t, member m1,member m2 "
 				+ "where s.STATE_CD=t.SPT_STATECODE and m1.MEMBER_NO=s.MEMBER_NO and m2.MEMBER_NO=s.M_CLERK and "
-				+ "m1.member_code=? or m2.member_code=?";
+				+ "(m1.member_code=? or m2.member_code=?)";
 		
 		try {
 			pstmt=conn.prepareStatement(query);
@@ -914,11 +937,12 @@ public class BoardDao {
 				spt.setPartnerCode(rset.getString("member_code"));
 				spt.setBoardCode(rset.getString("b_code"));
 				spt.setFileName(rset.getString("p_file"));
-				spt.setStateCode(rset.getString("state_code"));
+				spt.setStateCode(rset.getString("state_cd"));
 				spt.setStateName(rset.getString("statename"));
-				spt.setmClerkNo(rset.getInt("statename"));
-				spt.setmClerkId(rset.getString("member_id_1"));
-				spt.setmClerkCode(rset.getString("member_code_1"));
+				spt.setmClerkNo(rset.getInt("m_clerk"));
+				spt.setmClerkId(rset.getString("m_clerkId"));
+				spt.setmClerkCode(rset.getString("m_clerkCode"));
+				
 				
 				sptList.add(spt);
 			}
@@ -930,6 +954,57 @@ public class BoardDao {
 			JDBCTemplate.close(pstmt);
 		}
 		return sptList;
+	}
+
+	//기술지원게시판 작성(파일업로드 했을 경우)
+	public int writeSupportTech(Connection conn, SupportTech spt) {
+		PreparedStatement pstmt=null;
+		int result =0;
+		String query = "insert all into spt_tech values(SUPPORT_SQ.NEXTVAL,?,?,sysdate,0,?,'support',?,'insert',default) "
+				+ "into FILEINFO values(FILE_SQ.NEXTVAL,?,'support',SUPPORT_SQ.CURRVAL) " + 
+				"select * from dual";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setString(1, spt.getTitle());
+			pstmt.setString(2, spt.getContents());
+			pstmt.setInt(3, spt.getPartnerNo());
+			pstmt.setString(4, spt.getFileName());
+			pstmt.setString(5, spt.getFileName());
+			
+			result=pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
+
+	//기술지원게시판(파일업로드 x)
+	public int writeSupportTechNotFile(Connection conn, SupportTech spt) {
+		PreparedStatement pstmt=null;
+		int result =0;
+		String query = "insert into spt_tech values(SUPPORT_SQ.NEXTVAL,?,?,sysdate,0,?,'support',?,'insert',null) ";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setString(1, spt.getTitle());
+			pstmt.setString(2, spt.getContents());
+			pstmt.setInt(3, spt.getPartnerNo());
+			pstmt.setString(4, spt.getFileName());
+			
+			result=pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
 	}
 
 

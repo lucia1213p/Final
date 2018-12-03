@@ -107,7 +107,8 @@ table tr td:nth-child(1){
 				<%}%>
 			</form>
 		</div>
-		<div class="comment_list">
+		<div class="row">
+			<div class="comment_list">
 			<%if(!ncList.isEmpty()) {%>
 				<%for(NComment nc : ncList) {%>
 					<div class="comments">
@@ -115,8 +116,8 @@ table tr td:nth-child(1){
 							<div style="width:20%; float:left;" class="name">
 								<div><b><%=nc.getMemberName()%></b></div>
 							</div>
-							<div style="width:90%; float:left;" class="comment-block">
-								<p class="comment-text"><%=nc.getCommCont() %></p>
+							<div style="width:100%; float:left;" class="comment-block">
+								<p style="min-height:70px;"class="comment-text"><%=nc.getCommCont() %></p>
 								<div class="bottom-comment">
 									<div class="comment-date"><%=nc.getCommDate() %></div>
 									<%if(m.getMemberId().equals(nc.getMemberName())) {%>
@@ -134,6 +135,8 @@ table tr td:nth-child(1){
 			  		<h3>댓글이 없습니다.</h3>
 			  <%} %>
 		</div>
+		</div>
+		
 	</div>
 	<script>
 		//댓글입력 확인

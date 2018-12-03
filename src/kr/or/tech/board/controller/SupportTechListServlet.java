@@ -40,6 +40,9 @@ public class SupportTechListServlet extends HttpServlet {
 		Member member = (Member)session.getAttribute("member");
 		if(member!=null) {
 			ArrayList<SupportTech> sptList=new BoardService().supportTechList(member.getMemCode());
+			if(sptList.isEmpty()) {
+				System.out.println("비어있음");
+			}
 			RequestDispatcher view = request.getRequestDispatcher("views/board/supportTech.jsp");
 			request.setAttribute("sptList", sptList);
 			view.forward(request, response);

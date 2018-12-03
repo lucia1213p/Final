@@ -213,7 +213,13 @@ public class BoardService {
 	public int writeShareTech(ShrTech shr) {
 		
 		Connection conn = JDBCTemplate.getConnection();
-		int result = new BoardDao().writeShareTech(conn,shr);
+		int result = 0;
+		
+		if(shr.getFileName()!=null) {
+			result = new BoardDao().writeShareTech(conn,shr);
+		}else {
+			result = new BoardDao().writeShareTechNotFile(conn,shr);
+		}
 		
 		if(result>0) {
 			JDBCTemplate.commit(conn);
@@ -350,6 +356,28 @@ public class BoardService {
 		JDBCTemplate.close(conn);
 		
 		return sptList;
+	}
+
+
+	//기술지원게시글 작성
+	public int writeSupportTech(SupportTech spt) {
+		Connection conn = JDBCTemplate.getConnection();
+		int result = 0;
+		
+		if(spt.getFileName()!=null) {
+			result = new BoardDao().writeSupportTech(conn,spt);
+		}else {
+			result = new BoardDao().writeSupportTechNotFile(conn,spt);
+		}
+		if(result>0) {
+			JDBCTemplate.commit(conn);
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		
+		JDBCTemplate.close(conn);
+		return result;
+		
 	}
 
 

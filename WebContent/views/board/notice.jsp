@@ -37,6 +37,9 @@
 	table tr{
 		text-align:center;
 	}
+	table{
+		margin-top:40px;
+	}
 </style>
 </head>
 <body>
@@ -46,6 +49,7 @@
 <jsp:include page="/header.jsp" flush="false" />
 
 <div class="container">
+	<h3 class="text-center"><b>공지사항 게시판</b></h3>
     <table class="table table-bordered table-hover">
     <thead class="table">
         <tr>

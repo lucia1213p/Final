@@ -39,16 +39,19 @@ p {
   margin: 2.5rem auto 0;
   max-width: 60.75rem;
   padding: 0 1.25rem;
-} */
-
+}
+ */
 .comment-wrap {
-  margin-bottom: 1.25rem;
+/*   margin-bottom: 1.25rem; */
   display: table;
   width: 100%;
-  min-height: 5.3125rem;
+ /*  min-height: 5.3125rem; */
 }
 
-
+.comments{
+	
+	margin-top:50px;
+}
 .photo {
   padding-top: 0.625rem;
   display: table-cell;
@@ -109,7 +112,7 @@ p {
 
 <!-- 내가 수정한 css -->
 .comment_list{
-	padding-top:20px;
+	margin-top:40px;
 	
 }
 

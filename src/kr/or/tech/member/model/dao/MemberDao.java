@@ -32,6 +32,8 @@ public class MemberDao {
 				member.setMemberPwd(rset.getString("member_pwd"));
 				member.setMemberName(rset.getString("member_name"));
 				member.setMemberGrade(rset.getString("grade_code"));
+				member.setMemCode(rset.getString("member_code"));
+				
 			}
 			
 		} catch (SQLException e) {

@@ -48,10 +48,13 @@ public class NoticeListServlet extends HttpServlet {
 			}
 			//비즈니스 로직 
 			NPageData npd=new BoardService().noticeList(NoticeCurrentPage);
-			
-			RequestDispatcher view = request.getRequestDispatcher("views/board/notice.jsp");
-			request.setAttribute("nPageData", npd);
-			view.forward(request, response);
+			if(npd!=null) {
+				RequestDispatcher view = request.getRequestDispatcher("views/board/notice.jsp");
+				request.setAttribute("nPageData", npd);
+				view.forward(request, response);
+			}else {
+				response.sendRedirect("views/board/noticeNotList.jsp");
+			}
 		}else {
 			response.sendRedirect("views/error/errorPage.jsp");
 		}
