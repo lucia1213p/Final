@@ -1,3 +1,4 @@
+<%@page import="kr.or.tech.board.model.service.BoardService"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import = "kr.or.tech.board.model.vo.*"
@@ -8,7 +9,18 @@
  	ShrTech shr = (ShrTech)request.getAttribute("shrTech");
  	ArrayList<ShrTechAnswer> answerList=(ArrayList<ShrTechAnswer>)request.getAttribute("answerList");
  	Member m = ((Member)request.getSession(false).getAttribute("member"));
- 
+ 	
+ 	//채택된 답변 여부 확인
+ 	int adoptCheck=0;
+ 	if(!answerList.isEmpty()) {
+	 	for(ShrTechAnswer st:answerList){
+	 		if(st.getAnswAddopt().equals("Y")){
+	 			adoptCheck++;
+	 		}
+	 	}
+ 	}
+ 	
+ 	
  %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -17,47 +29,12 @@
 <meta name="viewport" content="width=device-width",initial-scale="1">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <link rel="stylesheet" href="/css/comment.css">
+<link rel="stylesheet" href="/css/Answer.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="js/bootstrap.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 <title>기술공유 게시글</title>
-<style>
-	
-	.container{
-			padding-top:50px;
-	}
-	
-	table tr td:nth-child(1){
-		font-weight: bold; 
-	}
-	#answerText{
-	
-		color:#1294AB;
-		font-weight:bold;
-	}
-	.answer{
-	
-		border:1px solid #578100;
-		margin-top:50px;
-	}
-	.answer-wrap{
-		padding:20px;
-	}
-	.top-answer{
-	 height:30%;
-	}
-	.top-left{
-		float:left;
-		width:70%;
-	}
-	.top-right{
-		float:right;
-		width:30%;
-	}
-	
-
-</style>
 
 </head>
 <body>
@@ -122,43 +99,77 @@
 				<%}%>
 			</form>
 		</div>
+	 </div>
 		<!-- 답변 리스트 -->
-		<div class="answerList">
-		<h3 id="answerText">↓ANSWER</h3>
-		  <%if(!answerList.isEmpty()) {
-		    for(ShrTechAnswer sta:answerList){ %>
-		      <div class="answer">
-		 		<div class="answer-wrap">
-		 			<div class="top-answer">
-		 			  <div class="top-left">
-		 				<h4><b><%=sta.getMemberId() %></b>님의 답변</h4>
-		 				<%=sta.getAnswDate()%>
-		 			  </div>
-		 			  <div class="top-right">
-		 			  	<%if(sta.getAnswAddopt().equals("N")) {%>
-		 			  		<img src="/img/adopt.png" width="50" height="50">
-		 			  	<%}%>
-		 			  </div>
-		 			 </div>
-		 			  <div class="content">
-		 			  	<hr>
-						<p class="comment-text" style="min-height:150px;"><%=sta.getAnswCont() %></p>
-		 			  </div>
-					 <div class="bottom-comment">
-						<ul class="comment-actions">
-							<li class="complain"><a href="#" id="updateComment" onclick="updateCmt()">수정</a></li>
-							<li class="reply"><a href="#" onclick="delComment()">삭제</a></li>
-						</ul>
-					 </div>
-		 		</div>
-		 	  </div>
-		 	  <%}
-		    }%>
-	    </div>
+  	<section class="content-item" id="comments">
+       <div class="container">      
+		<div class="row">
+                <h3 id="answerText">↓ ANSWER</h3>
+                <hr>
+                <!-- COMMENT 1 - START -->
+                 <%if(!answerList.isEmpty()) {
+				    for(ShrTechAnswer sta:answerList){ %>
+		                <div class="media">
+		                    <div class="media-body">
+		                       <div class="body-top">
+		                       	<h4 class="media-heading"><b><%=sta.getMemberId() %></b> 님의 답변</h4>
+		                        <div class="body-right">
+			                        <%if(sta.getAnswAddopt().equals("Y")) {%>
+				 			  			<img src="/img/checkMark.png" class="media-check" width="50" height="50">
+				 			  		<%}%>
+			 			  		</div>
+		                       </div>
+		                       <div class="body-content">
+			                        <p class="comment-text" style="min-height:150px;"><%=sta.getAnswCont() %></p>
+			                        <ul class="list-unstyled list-inline media-detail pull-left">
+			                            <li><i class="fa fa-calendar"></i><%=sta.getAnswDate() %></li>
+			                        </ul>
+			                        <ul class="list-unstyled list-inline media-detail pull-right">
+			                            <li class="complain"><a href="#" id="updateComment" onclick="updateCmt()">수정</a></li>
+										<li class="reply"><a href="#" onclick="delComment()">삭제</a></li>
+			                        </ul>
+		                       </div>
+		                    </div>
+		                    <!-- 채택버튼 채택된 글이 없을 경우  -->
+		              		<%if(adoptCheck==0) {%>
+			                <div class="adopt">
+			                	<input type='button' onclick='adoptAnswer(<%=sta.getAnswNo()%>,<%=sta.getShrNo() %>,<%=sta.getMemberNo() %>)' class="btn btn-success pull-right" value="채택하기">
+			                </div>
+			                <%} %>
+		                </div>
+	                 <%}
+			    }%>
+           </div>
 	</div>
+ </section>
 	
 <!-- 푸터 내비 -->
 <jsp:include page="/footer.jsp" flush="false" />
 	
+<script>
+	function adoptAnswer(answNum,shrNo,memNo){
+		console.log("스크립트 들어옴");
+		if(confirm("답변을 채택하시겠습니까?")){
+			$.ajax({
+				url:"/shareAnswerAdopt.do",
+				type:"post",
+				data:{answNum:answNum,shrNo:shrNo,memNo:memNo},
+				success: function(result){
+					if (result==1) {
+						alert("채택되었습니다");
+						location.reload();
+					}else{
+						alert("채택 실패");
+					}
+				},
+				error:function(){
+					location.href="/views/error/errorPage.jsp"
+				}
+			});
+		}else{
+			return false;
+		}			
+	}
+</script>
 </body>
 </html>

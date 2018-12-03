@@ -55,9 +55,9 @@ table tr td:nth-child(1){
 				
 				<tbody id="titleInfo">
 					<tr>
-						<input type="hidden" name="noticeNo" value="<%=n.getNoticeNo() %>">
 						<td style="width :20%;">제목</td>
 						<td colspan="2" name="title"><%= n.getNoticeTitle()%></td>
+						<input type="hidden" name="noticeNo" value="<%=n.getNoticeNo() %>">
 					</tr>
 					
 					<tr>
@@ -86,7 +86,7 @@ table tr td:nth-child(1){
 			</form>
 				<a href="/noticeList.do" class="btn btn-primary btn-sm active">목록</a>
 				<!-- (수정) 글 작성자나 관리자가 아니면 수정,삭제 못하게 -->
-				 <a href="/views/board/noticeUpdate.jsp?noticeNo=<%=n.getMemberNo()%>&boardCode=<%=n.getBoardCode() %>" class="btn btn-primary btn-sm active">수정</a>
+				<a href="/views/board/noticeUpdate.jsp?noticeNo=<%=n.getMemberNo()%>&boardCode=<%=n.getBoardCode() %>" class="btn btn-primary btn-sm active">수정</a>
 				<a href="/noticeDelete.do?noticeNo=<%=n.getMemberNo()%>" class="btn btn-primary btn-sm active">삭제</a>
 		</div>
 	</div>
@@ -137,7 +137,6 @@ table tr td:nth-child(1){
 	</div>
 	<script>
 		//댓글입력 확인
-		
 		function cmtCheck(){
 			var comment = document.getElementById("comment").value;
 			if(comment==""){
@@ -176,7 +175,6 @@ table tr td:nth-child(1){
 			}			
 	   }
 	</script>
-	
 <!-- 푸터 내비 -->
 <jsp:include page="/footer.jsp" flush="false" />
 	

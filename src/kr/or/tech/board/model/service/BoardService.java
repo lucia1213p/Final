@@ -10,6 +10,7 @@ import kr.or.tech.board.model.vo.NPageData;
 import kr.or.tech.board.model.vo.Notice;
 import kr.or.tech.board.model.vo.ShrTech;
 import kr.or.tech.board.model.vo.ShrTechAnswer;
+import kr.or.tech.board.model.vo.SupportTech;
 import kr.or.tech.common.JDBCTemplate;
 
 public class BoardService {
@@ -56,6 +57,7 @@ public class BoardService {
 			npd.setPageNavi(pageNavi);
 		}else {
 			System.out.println("데이터없음");
+			System.out.println(npd);
 		}
 		JDBCTemplate.close(conn);
 		
@@ -193,6 +195,8 @@ public class BoardService {
 		return mpb;
 	}
 	
+	//----기술공유게시판----
+	
 	//기술공유게시판 리스트
 	public ArrayList<ShrTech> shareTechList() {
 		Connection conn =JDBCTemplate.getConnection();
@@ -204,7 +208,6 @@ public class BoardService {
 		return shrList;
 	}
 
-	//----기술공유게시판----
 	
 	//기술공유게시글 작성
 	public int writeShareTech(ShrTech shr) {
@@ -234,7 +237,9 @@ public class BoardService {
 			JDBCTemplate.rollback(conn);
 		}
 		
+		
 		ShrTech shr = new BoardDao().shareTechInfo(conn,shareTechNo,boardCode);
+		
 		
 		JDBCTemplate.close(conn);
 		return shr;
@@ -265,6 +270,86 @@ public class BoardService {
 		
 		JDBCTemplate.close(conn);
 		return answerList;
+	}
+	
+	//기술공유게시판 답변 채택
+	public int adoptAnswer(int answNum, int shrNo) {
+		Connection conn = JDBCTemplate.getConnection();
+		
+		int result = new BoardDao().adoptAnswer(conn,answNum,shrNo);
+		
+		if(result>0) {
+			JDBCTemplate.commit(conn);
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		
+		JDBCTemplate.close(conn);
+		
+		return result;
+		
+	}
+
+	//답변채택 대기상태로 변경
+	public void adoptWait(int shareTechNo) {
+		Connection conn = JDBCTemplate.getConnection();
+		
+		int result = new BoardDao().adoptWait(conn, shareTechNo);
+		
+		if(result>0) {
+			JDBCTemplate.commit(conn);
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		
+		JDBCTemplate.close(conn);
+		
+	}
+
+	//답변이 아예 없을 경우
+	public void adoptN(int shareTechNo) {
+		Connection conn = JDBCTemplate.getConnection();
+		
+		int result = new BoardDao().adoptN(conn, shareTechNo);
+		
+		if(result>0) {
+			JDBCTemplate.commit(conn);
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		
+		JDBCTemplate.close(conn);
+		
+		
+	}
+
+	//답변이 이미 채택되었을 경우 
+	public void adoptY(int shareTechNo) {
+		Connection conn = JDBCTemplate.getConnection();
+		
+		int result = new BoardDao().adoptY(conn, shareTechNo);
+		
+		if(result>0) {
+			JDBCTemplate.commit(conn);
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		
+		JDBCTemplate.close(conn);
+		
+		
+	}
+	
+	
+	//----------기술지원게시판------------
+	//기술지원게시판 리스트
+	public ArrayList<SupportTech> supportTechList(String memberCode) {
+		Connection conn = JDBCTemplate.getConnection();
+		ArrayList<SupportTech> sptList = new BoardDao().supportTechList(conn,memberCode);
+		
+		JDBCTemplate.close(conn);
+		
+		return sptList;
 	}
 
 

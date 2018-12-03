@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import kr.or.tech.board.model.dao.BoardDao;
 import kr.or.tech.board.model.service.BoardService;
 import kr.or.tech.board.model.vo.ShrTech;
 import kr.or.tech.board.model.vo.ShrTechAnswer;
@@ -41,6 +40,22 @@ public class ShareTechInfoServlet extends HttpServlet {
 		
 		ShrTech shr=new BoardService().shareTechInfo(shareTechNo,boardCode);
 		ArrayList<ShrTechAnswer> answerList = new BoardService().srtAnswerList(shareTechNo);
+		
+		//채택된 답변이 있는지 확인하기 위한 
+		int checkAdopt=0;
+		for(ShrTechAnswer shrAnswer:answerList) {
+			if(shrAnswer.getAnswAddopt().equals("Y")) {
+				checkAdopt=1;
+			}
+		}
+		
+		if(checkAdopt>0){
+			new BoardService().adoptY(shareTechNo);
+		}else if(answerList!=null) { 
+			new BoardService().adoptWait(shareTechNo);
+		}else if(answerList==null) {
+			new BoardService().adoptN(shareTechNo);
+		}
 		
 		if(shr!=null) {
 			RequestDispatcher view = request.getRequestDispatcher("/views/board/shareTechInfo.jsp");

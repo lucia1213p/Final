@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import kr.or.tech.board.model.vo.ShrTech;
 import kr.or.tech.board.model.vo.ShrTechAnswer;
+import kr.or.tech.board.model.vo.SupportTech;
 import kr.or.tech.board.model.vo.NComment;
 import kr.or.tech.board.model.vo.Notice;
 import kr.or.tech.common.JDBCTemplate;
@@ -790,6 +791,145 @@ public class BoardDao {
 		}
 		
 		return answerList;
+	}
+
+	//기술공유 게시판 답변 채택
+	public int adoptAnswer(Connection conn, int answNum, int shrNo) {
+		PreparedStatement pstmt=null;
+		int result = 0;
+		String query = "update shr_answer set answ_adopt='Y' where answ_no=? and s_no=?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setInt(1, answNum);
+			pstmt.setInt(2, shrNo);
+			result=pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
+
+	//답변 채택 대기 상태로 변경 <답변이 있을 경우>
+	public int adoptWait(Connection conn,int shareTechNo) {
+		PreparedStatement pstmt=null;
+		int result = 0;
+		String query = "update shr_tech set s_addopt='W' where s_no=?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setInt(1, shareTechNo);
+			result= pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+		
+	}
+	
+	//답변이 없을 경우
+	public int adoptN(Connection conn, int shareTechNo) {
+		PreparedStatement pstmt=null;
+		int result = 0;
+		String query = "update shr_tech set s_addopt='N' where s_no=?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setInt(1, shareTechNo);
+			result= pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+		
+		
+	}
+	//채택된 답변이 있는 경우 상태 
+	public int adoptY(Connection conn, int shareTechNo) {
+		PreparedStatement pstmt=null;
+		int result = 0;
+		String query = "update shr_tech set s_addopt='Y' where s_no=?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setInt(1, shareTechNo);
+			result= pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+		
+	}
+
+	//----------기술지원게시판
+	//기술지원 (협력사담당자나 제조사담당자가 같은 회사 인 것만 출력)
+	public ArrayList<SupportTech> supportTechList(Connection conn, String memberCode) {
+		PreparedStatement pstmt=null;
+		ResultSet rset=null;
+		SupportTech spt=null;
+		ArrayList<SupportTech> sptList = new ArrayList<SupportTech>();
+		
+		String query ="select s.*, t.STATENAME,m1.MEMBER_ID,m1.MEMBER_CODE,m2.MEMBER_ID,m2.MEMBER_CODE from SPT_TECH s,SPT_STATE t, member m1,member m2 "
+				+ "where s.STATE_CD=t.SPT_STATECODE and m1.MEMBER_NO=s.MEMBER_NO and m2.MEMBER_NO=s.M_CLERK and "
+				+ "m1.member_code=? or m2.member_code=?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setString(1, memberCode);
+			pstmt.setString(2, memberCode);
+			rset=pstmt.executeQuery();
+			
+			while(rset.next()) {
+				spt=new SupportTech();
+				spt.setBoardNo(rset.getInt("p_no"));
+				spt.setTitle(rset.getString("p_title"));
+				spt.setContents(rset.getString("p_cont"));
+				spt.setDate(rset.getDate("p_date"));
+				spt.setHits(rset.getInt("p_hits"));
+				spt.setPartnerNo(rset.getInt("member_no"));
+				spt.setPartnerId(rset.getString("member_id"));
+				spt.setPartnerCode(rset.getString("member_code"));
+				spt.setBoardCode(rset.getString("b_code"));
+				spt.setFileName(rset.getString("p_file"));
+				spt.setStateCode(rset.getString("state_code"));
+				spt.setStateName(rset.getString("statename"));
+				spt.setmClerkNo(rset.getInt("statename"));
+				spt.setmClerkId(rset.getString("member_id_1"));
+				spt.setmClerkCode(rset.getString("member_code_1"));
+				
+				sptList.add(spt);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		return sptList;
 	}
 
 

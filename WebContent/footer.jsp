@@ -17,7 +17,7 @@
 
 footer{
  margin-top:200px;
- padding-top:20px;
+ padding-top:10px;
 }
 
 .context-dark, .bg-gray-dark, .bg-primary {

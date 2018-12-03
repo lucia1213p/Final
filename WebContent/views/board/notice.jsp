@@ -6,14 +6,15 @@
 %>
 <%
 	NPageData npd = (NPageData)request.getAttribute("nPageData");
- 
 	ArrayList<Notice> list = npd.getList();
 	String pageNavi = npd.getPageNavi();
+	
 	Member m = ((Member)request.getSession(false).getAttribute("member"));
 %>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<head>
+<head> 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width",initial-scale="1">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -72,7 +73,7 @@
                 <td class="text-center"><a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
            		<td><%=n.getNoticeHits() %></td>
            	<%if(m.getMemberGrade().equals("HA")||m.getMemberGrade().equals("MA")){%>
-           		<td><button onclick="selectNotice(<%=n.getNoticeNo() %>)" class="btn btn-primary">선택</button></td>
+     	 		<td><button onclick="selectNotice(<%=n.getNoticeNo() %>)" class="btn btn-primary">선택</button></td>
            	<%} %>
             </tr>
          	<%} %>
@@ -114,7 +115,6 @@
                     
                    <input type="text" name="search" class="form-control" placeholder="Search...">
 			        <button class="btn btn-default form-control" id="writeBtn" onclick="document.getElementById('searchBtn').submit();" type="button"><span class="glyphicon glyphicon-search"></span></button>
-                    
             </center>
         </form>
     	</div>
