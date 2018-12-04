@@ -2,11 +2,17 @@
     pageEncoding="UTF-8"%>
     
 <%@ page import = "kr.or.tech.board.model.vo.*" 
+	import = "kr.or.tech.member.model.vo.*"
 	import="java.util.ArrayList"
 %>
 
 <%
-	ArrayList<ShrTech> list=(ArrayList<ShrTech>)request.getAttribute("shrList");
+	ShrPageData spd=(ShrPageData)request.getAttribute("shrPageData");
+
+	ArrayList<ShrTech> list=spd.getList();
+	String pageNavi = spd.getPageNavi();
+	Member m = ((Member)request.getSession(false).getAttribute("member"));
+
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -33,6 +39,9 @@
 	table tr{
 		text-align:center;
 	}
+	table{
+		margin-top:40px;
+	}
 </style>
 
 <!-- 헤더 내비 -->
@@ -42,6 +51,7 @@
 <body>
 
 <div class="container">
+	<h3 class="text-center"><b>기술공유 게시판</b></h3>
     <table class="table table-bordered table-hover">
     <thead class="table">
         <tr>
@@ -89,13 +99,7 @@
 	  </div>
 	   <div class="row">              
 		  <ul class="pagination">
-		  	<li><a href="#">«</a></li>
-		    <li><a href="#">1</a></li>
-		    <li><a href="#">2</a></li>
-		    <li><a href="#">3</a></li>
-		    <li><a href="#">4</a></li>
-		    <li><a href="#">5</a></li>
-		    <li><a href="#">»</a></li>
+		  	<li><%=pageNavi%></li>
 		  </ul>
 	  </div>
 	  

@@ -8,8 +8,10 @@ import kr.or.tech.board.model.vo.MainpageBoard;
 import kr.or.tech.board.model.vo.NComment;
 import kr.or.tech.board.model.vo.NPageData;
 import kr.or.tech.board.model.vo.Notice;
+import kr.or.tech.board.model.vo.ShrPageData;
 import kr.or.tech.board.model.vo.ShrTech;
 import kr.or.tech.board.model.vo.ShrTechAnswer;
+import kr.or.tech.board.model.vo.SptTechAnswer;
 import kr.or.tech.board.model.vo.SupportTech;
 import kr.or.tech.common.JDBCTemplate;
 
@@ -198,14 +200,29 @@ public class BoardService {
 	//----기술공유게시판----
 	
 	//기술공유게시판 리스트
-	public ArrayList<ShrTech> shareTechList() {
+	public ShrPageData shareTechList(int shrCurrentPage) {
 		Connection conn =JDBCTemplate.getConnection();
 		
-		ArrayList<ShrTech> shrList=  new BoardDao().shareTechList(conn);
+		//게시물개수와 navi 개수 지정
+		int recordCountPerPage = 1;
+		int naviCountPerPage =5;
 		
+		//현재페이지의 게시물 리스트 
+		ArrayList<ShrTech> shrList=  new BoardDao().shareTechList(conn,shrCurrentPage,recordCountPerPage);
+		String pageNavi = new BoardDao().getShrPageNavi(conn,shrCurrentPage,recordCountPerPage,naviCountPerPage);
+		
+		ShrPageData spd=null;
+		
+		if(!shrList.isEmpty() && !pageNavi.isEmpty()) {
+			spd= new ShrPageData();
+			spd.setList(shrList);
+			spd.setPageNavi(pageNavi);
+		}else {
+			System.out.println("데이터없음");
+		}
 		JDBCTemplate.close(conn);
 		
-		return shrList;
+		return spd;
 	}
 
 	
@@ -220,7 +237,7 @@ public class BoardService {
 		}else {
 			result = new BoardDao().writeShareTechNotFile(conn,shr);
 		}
-		
+
 		if(result>0) {
 			JDBCTemplate.commit(conn);
 		}else {
@@ -309,7 +326,6 @@ public class BoardService {
 		}
 		
 		JDBCTemplate.close(conn);
-		
 	}
 
 	//답변이 아예 없을 경우
@@ -325,8 +341,6 @@ public class BoardService {
 		}
 		
 		JDBCTemplate.close(conn);
-		
-		
 	}
 
 	//답변이 이미 채택되었을 경우 
@@ -343,9 +357,7 @@ public class BoardService {
 		
 		JDBCTemplate.close(conn);
 		
-		
 	}
-	
 	
 	//----------기술지원게시판------------
 	//기술지원게시판 리스트
@@ -357,7 +369,6 @@ public class BoardService {
 		
 		return sptList;
 	}
-
 
 	//기술지원게시글 작성
 	public int writeSupportTech(SupportTech spt) {
@@ -377,11 +388,46 @@ public class BoardService {
 		
 		JDBCTemplate.close(conn);
 		return result;
-		
 	}
 
+	//기술지원 게시판 제조사 관리자 자동할당 
+	public int maAutoAssign(int maNo) {
+		
+		Connection conn = JDBCTemplate.getConnection();
+		int result = new BoardDao().maAutoAssign(conn,maNo);
+		
+		if(result>0) {
+			JDBCTemplate.commit(conn);
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		JDBCTemplate.close(conn);
+		return result;
+	}
 
+	//기술지원 게시글 정보
+	public ShrTech supportTechInfo(int sptTechNo, String boardCode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-	
+	//기술지원 게시글 답변 정보
+	public ArrayList<SptTechAnswer> sptAnswerList(int sptTechNo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	//기술공유 답변 삭제
+	public int deleteShareAnswer(int answNo, int shareNo) {
+		Connection conn = JDBCTemplate.getConnection();
+		int result = new BoardDao().deleteShareAnswer(conn,answNo,shareNo);
+		if(result>0) {
+			JDBCTemplate.commit(conn);
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		JDBCTemplate.close(conn);
+		return result;
+	}
 
 }

@@ -7,19 +7,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import kr.or.tech.board.model.service.BoardService;
-
 /**
- * Servlet implementation class NCommentDeleteServlet
+ * Servlet implementation class NoticeUpdateServlet
  */
-@WebServlet(name = "NCommentDelete", urlPatterns = { "/nCommentDelete.do" })
-public class NCommentDeleteServlet extends HttpServlet {
+@WebServlet(name = "NoticeUpdate", urlPatterns = { "/noticeUpdate.do" })
+public class NoticeUpdateServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public NCommentDeleteServlet() {
+    public NoticeUpdateServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -28,11 +26,8 @@ public class NCommentDeleteServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		request.setCharacterEncoding("utf-8");
-		int commNo = Integer.parseInt(request.getParameter("cmtNo"));
-		int result = new BoardService().deleteNoticeComm(commNo);
-		System.out.println(result);
-		response.getWriter().print(result);
+		// TODO Auto-generated method stub
+		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
 	/**

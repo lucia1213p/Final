@@ -36,6 +36,37 @@
 
 <title>기술공유 게시글</title>
 
+<style>
+	/* Tooltip container */
+	table .tooltip {
+	    position: relative;
+	    display: inline-block;
+	    border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+	}
+	
+	/* Tooltip text */
+	table .tooltip .tooltiptext {
+	    visibility: hidden;
+	    width: 120px;
+	    bottom: 100%;
+	    left: 50%; 
+    	margin-left: -60px; /* Use half of the width (120/2 = 60), to center the tooltip */
+	    background-color: black;
+	    color: #fff;
+	    text-align: center;
+	    padding: 5px 0;
+	    border-radius: 6px;
+	 
+	    /* Position the tooltip text - see examples below! */
+	    position: absolute;
+	    z-index: 1;
+	}
+	
+	/* Show the tooltip text when you mouse over the tooltip container */
+	table .tooltip:hover .tooltiptext {
+	    visibility: visible;
+	}
+</style>
 </head>
 <body>
 	<!-- 헤더 내비 -->
@@ -57,7 +88,13 @@
 					</tr>
 					<tr>
 						<td>작성자</td>
-						<td colspan="2"><%= shr.getMemberId()%></td>
+						<td colspan="2">
+							<div class="tooltip"><%= shr.getMemberId()%>
+								<span class="tooltiptext">
+									이름 : 협력사 엔지니어
+								</span>
+							</div>
+						</td>
 					</tr>
 					<tr>
 						<td>작성일자 </td>
@@ -104,41 +141,41 @@
   	<section class="content-item" id="comments">
        <div class="container">      
 		<div class="row">
-                <h3 id="answerText">↓ ANSWER</h3>
-                <hr>
-                <!-- COMMENT 1 - START -->
-                 <%if(!answerList.isEmpty()) {
-				    for(ShrTechAnswer sta:answerList){ %>
-		                <div class="media">
-		                    <div class="media-body">
-		                       <div class="body-top">
-		                       	<h4 class="media-heading"><b><%=sta.getMemberId() %></b> 님의 답변</h4>
-		                        <div class="body-right">
-			                        <%if(sta.getAnswAddopt().equals("Y")) {%>
-				 			  			<img src="/img/checkMark.png" class="media-check" width="50" height="50">
-				 			  		<%}%>
-			 			  		</div>
-		                       </div>
-		                       <div class="body-content">
-			                        <p class="comment-text" style="min-height:150px;"><%=sta.getAnswCont() %></p>
-			                        <ul class="list-unstyled list-inline media-detail pull-left">
-			                            <li><i class="fa fa-calendar"></i><%=sta.getAnswDate() %></li>
-			                        </ul>
-			                        <ul class="list-unstyled list-inline media-detail pull-right">
-			                            <li class="complain"><a href="#" id="updateComment" onclick="updateCmt()">수정</a></li>
-										<li class="reply"><a href="#" onclick="delComment()">삭제</a></li>
-			                        </ul>
-		                       </div>
-		                    </div>
-		                    <!-- 채택버튼 채택된 글이 없을 경우  -->
-		              		<%if(adoptCheck==0) {%>
-			                <div class="adopt">
-			                	<input type='button' onclick='adoptAnswer(<%=sta.getAnswNo()%>,<%=sta.getShrNo() %>,<%=sta.getMemberNo() %>)' class="btn btn-success pull-right" value="채택하기">
-			                </div>
-			                <%} %>
-		                </div>
-	                 <%}
-			    }%>
+            <h3 id="answerText">↓ ANSWER</h3>
+            <hr>
+            <!-- COMMENT 1 - START -->
+             <%if(!answerList.isEmpty()) {
+   			 for(ShrTechAnswer sta:answerList){ %>
+              <div class="media">
+                  <div class="media-body">
+                     <div class="body-top">
+                     	<h4 class="media-heading"><b><%=sta.getMemberId() %></b> 님의 답변</h4>
+                      <div class="body-right">
+                       <%if(sta.getAnswAddopt().equals("Y")) {%>
+ 			  			<img src="/img/checkMark.png" class="media-check" width="50" height="50">
+ 			  		<%}%>
+			  		</div>
+                   </div>
+                   <div class="body-content">
+                     <p class="comment-text" style="min-height:150px;"><%=sta.getAnswCont() %></p>
+                     <ul class="list-unstyled list-inline media-detail pull-left">
+                         <li><i class="fa fa-calendar"></i><%=sta.getAnswDate() %></li>
+                     </ul>
+                     <ul class="list-unstyled list-inline media-detail pull-right">
+                         <li class="complain"><a href="#" id="updateComment" onclick="updateCmt()">수정</a></li>
+						<li class="reply"><a href="#" onclick="delAnswer(<%=sta.getAnswNo()%>,<%=sta.getShrNo()%>,<%=sta.getAnswAddopt()%>)">삭제</a></li>
+                     </ul>
+                   </div>
+                  </div>
+                  <!-- 채택버튼 채택된 글이 없을 경우  -->
+            		<%if(adoptCheck==0) {%>
+               <div class="adopt">
+               	<input type='button' onclick='adoptAnswer(<%=sta.getAnswNo()%>,<%=sta.getShrNo() %>,<%=sta.getMemberNo() %>)' class="btn btn-success pull-right" value="채택하기">
+               </div>
+               <%} %>
+              </div>
+              <%}
+  			 }%>
            </div>
 	</div>
  </section>
@@ -147,6 +184,35 @@
 <jsp:include page="/footer.jsp" flush="false" />
 	
 <script>
+
+	function delAnswer(aswNo,shareNo,adptAct){
+		console.log(adptAct);
+		if(adptAct!){
+			if(confirm("답변을 삭제하시겠습니까?")){
+				$.ajax({
+					url:"/shareAnswerDelete.do",
+					type:"post",
+					data:{aswNo:aswNo,shareNo:shareNo},
+					success:function(result){
+						if (result==1) {
+							alert("채택되었습니다");
+							location.reload();
+						}else{
+							alert("채택 실패");
+						}
+					},
+					error:function(){
+						location.href="/views/error/errorPage.jsp"
+					}
+				});
+			}	
+		}else{
+			alert("채택된 답변은 삭제가 불가능합니다");
+			return false;
+		}
+		
+	}
+	
 	function adoptAnswer(answNum,shrNo,memNo){
 		console.log("스크립트 들어옴");
 		if(confirm("답변을 채택하시겠습니까?")){

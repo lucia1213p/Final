@@ -1,9 +1,6 @@
 package kr.or.tech.board.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,22 +9,19 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import kr.or.tech.board.model.service.BoardService;
-import kr.or.tech.board.model.vo.Notice;
-import kr.or.tech.board.model.vo.ShrPageData;
-import kr.or.tech.board.model.vo.ShrTech;
 import kr.or.tech.member.model.vo.Member;
 
 /**
- * Servlet implementation class ShareTechListServlet
+ * Servlet implementation class SupportAutoAssignServlet
  */
-@WebServlet(name = "ShareTechList", urlPatterns = { "/shareTechList.do" })
-public class ShareTechListServlet extends HttpServlet {
+@WebServlet(name = "SupportAutoAssign", urlPatterns = { "/supportAutoAssign.do" })
+public class SupportAutoAssignServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ShareTechListServlet() {
+    public SupportAutoAssignServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -39,28 +33,16 @@ public class ShareTechListServlet extends HttpServlet {
 		HttpSession session =request.getSession(false);
 		Member member = (Member)session.getAttribute("member");
 		
-		if(member!=null) {
-			//페이징처리
-			int ShrCurrentPage;
-			if(request.getParameter("shrCurrentPage")==null) {
-				ShrCurrentPage=1;
+		if(member.getMemberGrade().equals("MA")) {
+			int result = new BoardService().maAutoAssign(member.getMemberNo());
+			if(result>0) {
+				response.sendRedirect("/");
 			}else {
-				ShrCurrentPage=Integer.parseInt(request.getParameter("shrCurrentPage"));
+				response.sendRedirect("views/error/errorPage.jsp");
 			}
-			
-			ShrPageData spd=new BoardService().shareTechList(ShrCurrentPage);
-			if(spd!=null) {
-				RequestDispatcher view = request.getRequestDispatcher("views/board/shareTech.jsp");
-				request.setAttribute("shrPageData", spd);
-				view.forward(request, response);
-			}else {
-				response.sendRedirect("views/board/shareNotList.jsp");
-			}
-	
 		}else {
-			response.sendRedirect("views/error/errorPage.jsp");
+			response.sendRedirect("views/error/authorityError.jsp");
 		}
-		
 	}
 
 	/**

@@ -3,9 +3,11 @@
     
 <%@ page import = "kr.or.tech.board.model.vo.*" 
 		import="java.util.ArrayList"
+		import = "kr.or.tech.member.model.vo.*"
  %>
  <%
  ArrayList<SupportTech> list=(ArrayList<SupportTech>)request.getAttribute("sptList");
+ Member m = ((Member)request.getSession(false).getAttribute("member"));
  %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -31,6 +33,9 @@
 	table tr{
 		text-align:center;
 	}
+	table{
+		margin-top:40px;
+	}
 </style>
 
 
@@ -43,6 +48,7 @@
 <body>
 
 <div class="container">
+	<h3 class="text-center"><b>기술지원 게시판</b></h3>
     <table class="table table-bordered table-hover">
     <thead class="table">
         <tr>
@@ -86,7 +92,9 @@
     <div class="container">  
  		
 	  <div class="row">
+	 <% if(m.getMemberGrade().equals("PE")){ %>
 	  		<button type="button" id="writeBtn" class="btn btn-primary btn-sm active pull-right">글작성</button>
+	  <%} %>
 	  </div>
 	   <div class="row">              
 		  <ul class="pagination">

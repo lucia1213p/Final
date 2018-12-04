@@ -1,32 +1,25 @@
 package kr.or.tech.board.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import kr.or.tech.board.model.service.BoardService;
-import kr.or.tech.board.model.vo.ShrTech;
-import kr.or.tech.board.model.vo.SupportTech;
-import kr.or.tech.member.model.vo.Member;
 
 /**
- * Servlet implementation class SupportTechListServlet
+ * Servlet implementation class ShareAnswerDeleteServlet
  */
-@WebServlet(name = "SupportTechList", urlPatterns = { "/supportTechList.do" })
-public class SupportTechListServlet extends HttpServlet {
+@WebServlet(name = "ShareAnswerDelete", urlPatterns = { "/shareAnswerDelete.do" })
+public class ShareAnswerDeleteServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public SupportTechListServlet() {
+    public ShareAnswerDeleteServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -35,20 +28,12 @@ public class SupportTechListServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.setCharacterEncoding("utf-8");
+		int answNo = Integer.parseInt(request.getParameter("aswNo"));
+		int shareNo = Integer.parseInt(request.getParameter("shareNo"));
 		
-		HttpSession session = request.getSession(false);
-		Member member = (Member)session.getAttribute("member");
-		if(member!=null) {
-			ArrayList<SupportTech> sptList=new BoardService().supportTechList(member.getMemCode());
-			if(sptList.isEmpty()) {
-				System.out.println("비어있음");
-			}
-			RequestDispatcher view = request.getRequestDispatcher("views/board/supportTech.jsp");
-			request.setAttribute("sptList", sptList);
-			view.forward(request, response);
-		}else {
-			response.sendRedirect("views/error/errorPage.jsp");
-		}
+		int result = new BoardService().deleteShareAnswer(answNo,shareNo);
+		response.getWriter().print(result);
 	}
 
 	/**

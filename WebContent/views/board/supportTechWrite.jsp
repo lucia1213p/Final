@@ -26,7 +26,16 @@
 <body>
 
 <script>
-
+	//첨부파일 업로드
+	$(document).ready(function(){
+        $('#browsebutton :file').change(function(e){
+            var fileName = e.target.files[0].name;
+            $("#label").attr('placeholder',fileName);
+        });
+        $('#resetFile').onclick(function(){
+        	document.getElementById("fileName").value = "";
+        });
+    });
 </script>
 <!-- 헤더 내비 -->
 <jsp:include page="/header.jsp" flush="false" />

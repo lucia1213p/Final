@@ -56,8 +56,8 @@ table tr td:nth-child(1){
 				<tbody id="titleInfo">
 					<tr>
 						<td style="width :20%;">제목</td>
-						<td colspan="2" name="title"><%= n.getNoticeTitle()%></td>
-						<input type="hidden" name="noticeNo" value="<%=n.getNoticeNo() %>">
+						<td colspan="2" name="title"><div id="title"><%= n.getNoticeTitle()%></div></td>
+						<td><textarea style="display:none;" id="noticeTitle" name="noticeTitle"><%=n.getNoticeTitle() %></textarea></td>
 					</tr>
 					
 					<tr>
@@ -72,6 +72,7 @@ table tr td:nth-child(1){
 					<tr>
 						<td>내용</td>
 						<td colspan="2" name="contents"><div style="min-height: 200px; text-align: left;"><%=n.getNoticeContent()%></div></td>
+						<textarea name="noticeNo" style="display:none;"><%=n.getNoticeNo() %></textarea>
 					</tr>
 					<tr>
 						<td>첨부파일</td>
@@ -86,7 +87,7 @@ table tr td:nth-child(1){
 			</form>
 				<a href="/noticeList.do" class="btn btn-primary btn-sm active">목록</a>
 				<!-- (수정) 글 작성자나 관리자가 아니면 수정,삭제 못하게 -->
-				<a href="/views/board/noticeUpdate.jsp?noticeNo=<%=n.getMemberNo()%>&boardCode=<%=n.getBoardCode() %>" class="btn btn-primary btn-sm active">수정</a>
+				<a href="" onclick="updateNotice(<%=n.getNoticeNo()%>)" class="btn btn-primary btn-sm active">수정</a>
 				<a href="/noticeDelete.do?noticeNo=<%=n.getMemberNo()%>" class="btn btn-primary btn-sm active">삭제</a>
 		</div>
 	</div>
@@ -117,12 +118,13 @@ table tr td:nth-child(1){
 								<div><b><%=nc.getMemberName()%></b></div>
 							</div>
 							<div style="width:100%; float:left;" class="comment-block">
-								<p style="min-height:70px;"class="comment-text"><%=nc.getCommCont() %></p>
+								<p id="comment-text" style="min-height:70px;"class="comment-text"><%=nc.getCommCont() %></p>
+								<input type="hidden" name="comment-update" id="comment-update" style="height:50;" value="<%=nc.getCommCont() %>"/>
 								<div class="bottom-comment">
 									<div class="comment-date"><%=nc.getCommDate() %></div>
 									<%if(m.getMemberId().equals(nc.getMemberName())) {%>
 										<ul class="comment-actions">
-											<li class="complain"><a href="#" id="updateComment" >수정</a></li>
+											<li class="complain"><a href="#" onclick="updateComment(<%=nc.getCommNo()%>)" >수정</a></li>
 											<li class="reply"><a href="#" onclick="delComment(<%=nc.getCommNo()%>)">삭제</a></li>
 										</ul>
 								 	<%} %>
@@ -139,9 +141,17 @@ table tr td:nth-child(1){
 		
 	</div>
 	<script>
+	
+		//게시글 수정
+		
+		function updateNotice(){
+			$("#title").style.display="none";
+			$("#noticeTitle").style.display="block";
+		}
+		
 		//댓글입력 확인
 		function cmtCheck(){
-			var comment = document.getElementById("comment").value;
+			var comment = $("#comment").value;
 			if(comment==""){
 				alert("댓글을 입력해주세요");
 				return false;
@@ -150,10 +160,9 @@ table tr td:nth-child(1){
 			}
 		}
 		//댓글 수정
-		function updateCmt(cmtNum){
-			 window.name = "parentForm";
-	         window.open("updateComment.do?num="+comment_num,
-	                        "updateForm", "width=570, height=350, resizable = no, scrollbars = no");
+		function updateComment(){
+			document.getElementById("comment-update").style.display="text";
+			document.getElementById("comment-text").style.display="none";
 		}
 		function delComment(cmtNum){
 			if(confirm("댓글을 삭제하시겠습니까?")){
@@ -177,9 +186,10 @@ table tr td:nth-child(1){
 				return false;
 			}			
 	   }
+	
+	
 	</script>
 <!-- 푸터 내비 -->
 <jsp:include page="/footer.jsp" flush="false" />
-	
 </body>
 </html>

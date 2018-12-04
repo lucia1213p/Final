@@ -10,9 +10,8 @@
 <%
 	int noticeNo = Integer.parseInt(request.getParameter("noticeNo"));
 	String boardCode=request.getParameter("boardCode");
-	Notice notice = new BoardService().noticeInfo(noticeNo,boardCode);
-	
-	System.out.println(notice.getNoticeTitle());
+	Notice n = new BoardService().noticeInfo(noticeNo,boardCode);
+	System.out.println("등급:"+n.getNoticeGradeName());
 	
 %>
 <head>
@@ -24,7 +23,7 @@
 <script src="js/bootstrap.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-<title>공지사항 글작성</title>
+<title>공지사항 글 작성</title>
 
 <style>
 	.container{
@@ -51,45 +50,36 @@
 
 <div class="container">
 	<div class="row">
-		<form method="post" action="/noticeWrite.do" enctype="multipart/form-data">
+		<form method="post" action="/noticeUpdate.do">
 		<table class="table table-striped" style="text-align:center; border:1px solid #dddddd">
 			<thead>
 				<tr>
-					<th colspan="2" style="background-color : #eeeeee; text-align:center;"><h4>공지사항 작성</h4></th>
+					<th rowspan="2" colspan="2" style="background-color : #eeeeee; text-align:center;"><h4>공지사항 작성</h4></th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td width="20%">
-						<select name="category" class="form-control">
-							<option value="">-------------</option>
-	                    	<option value="general">일반</option>
-	                    	<option value="emergency">긴급</option>
-	                    	<option value="important">중요</option>
-                		</select>
-                	</td>
-					<td><input type="text" class="form-control" placeholder="글 제목" name="noticeTitle" maxlength="50" value=<%=notice.getNoticeTitle() %>></td>
+					<td width="20%">카테고리</td>
+					<td colspan="2"><%=n.getNoticeGradeName() %></td>
 				</tr>
 				<tr>
-					<td colspan="2"><textarea type="text" class="form-control" placeholder="글 내용" name="noticeContent" maxlength="2048" style="height:550px; resize: none;"><%=notice.getNoticeContent()%></textarea></td>
+					<td width="20%">글 제목</td>
+					<td colspan="2"><input type="text" class="form-control" placeholder="글 제목" name="noticeTitle" maxlength="50" value=<%=n.getNoticeTitle() %>></td>
+				</tr>
+				<tr>
+					<td colspan="2"><textarea type="text" class="form-control" placeholder="글 내용" name="noticeContent" maxlength="2048" style="height:550px; resize: none;"><%=n.getNoticeContent()%></textarea></td>
 				</tr>
 				<tr>
 					<td width="10%">첨부파일</td>
-					<td>
-						<div class="input-group">
-					        <label id="browsebutton" class="btn btn-default input-group-addon" for="my-file-selector" style="background-color:white">
-					            <input id="my-file-selector" type="file" accept=".jpg, .gif, .png, .zip" id="fileName" name="fileName" style="display:none; ">
-					            <span class="glyphicon glyphicon-folder-open"></span>
-                        		<span class="image-preview-input-title">Browse</span>
-					        </label>
-					        <input id="label" type="text" class="form-control" readonly="">
-					    </div>
-					  <!--   <input type="button" id="resetFile" value="취소"> -->
-			       </td>
+						<%if(n.getNoticeFile()==null){%>
+						<td colspan="2"></td>
+						<%}else{ %>
+						<td colspan="2" name="fileName"><a href="/nFileDown.do?fileName=<%=n.getNoticeFile() %>"><%=n.getNoticeFile() %></a></td>
+						<%} %>
 				</tr>
 			</tbody>
 		</table>
-		<input type="submit" class="btn btn-primary pull-right" value="글작성">
+		<input type="submit" class="btn btn-primary pull-right" value="글 수정">
 		</form>
 	</div>
 </div>

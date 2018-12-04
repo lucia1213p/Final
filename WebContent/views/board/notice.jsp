@@ -116,9 +116,8 @@
                     <option value="writer">작성자</option>
                     <option value="title">제목</option>
                 </select>
-                    
-                   <input type="text" name="search" class="form-control" placeholder="Search...">
-			        <button class="btn btn-default form-control" id="writeBtn" onclick="document.getElementById('searchBtn').submit();" type="button"><span class="glyphicon glyphicon-search"></span></button>
+                <input type="text" name="search" class="form-control" placeholder="Search...">
+		        <button class="btn btn-default form-control" id="writeBtn" onclick="document.getElementById('searchBtn').submit();" type="button"><span class="glyphicon glyphicon-search"></span></button>
             </center>
         </form>
     	</div>
@@ -127,7 +126,6 @@
 
 <!-- 푸터 내비 -->
 <jsp:include page="/footer.jsp" flush="false" />
-	
 	
 <script>
    
@@ -143,7 +141,7 @@
 				type:"post",
 				data:{noticeNo:noticeNo},
 				success:function(result){
-					if(result==true){
+					if(result=='true'){
 						alert("선택 완료");
 						location.reload();
 					}else{

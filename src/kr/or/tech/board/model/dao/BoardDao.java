@@ -331,7 +331,7 @@ public class BoardDao {
 		return sb.toString();
 	}
 	
-	//조회수 증가
+	//공지사항 조회수 증가
 	public int changeHits(Connection conn, int noticeNo, String boardCode) {
 		PreparedStatement pstmt=null;
 		int result = 0;
@@ -907,7 +907,8 @@ public class BoardDao {
 		
 	}
 
-	//----------기술지원게시판
+	//----------기술지원게시판---------------------------------------
+	
 	//기술지원 (협력사담당자나 제조사담당자가 같은 회사 인 것만 출력)
 	public ArrayList<SupportTech> supportTechList(Connection conn, String memberCode) {
 		PreparedStatement pstmt=null;
@@ -915,9 +916,7 @@ public class BoardDao {
 		SupportTech spt=null;
 		ArrayList<SupportTech> sptList = new ArrayList<SupportTech>();
 		
-		String query ="select s.*, t.STATENAME,m1.MEMBER_ID,m1.MEMBER_CODE,m2.MEMBER_ID as m_clerkId,m2.MEMBER_CODE as m_clerkCode from SPT_TECH s,SPT_STATE t, member m1,member m2 "
-				+ "where s.STATE_CD=t.SPT_STATECODE and m1.MEMBER_NO=s.MEMBER_NO and m2.MEMBER_NO=s.M_CLERK and "
-				+ "(m1.member_code=? or m2.member_code=?)";
+		String query ="select s.*, t.STATENAME,m.MEMBER_ID,m.MEMBER_CODE from SPT_TECH s,SPT_STATE t, member m where s.STATE_CD=t.SPT_STATECODE and m.MEMBER_NO=s.MEMBER_NO and (m.member_code=?);";
 		
 		try {
 			pstmt=conn.prepareStatement(query);
@@ -943,7 +942,6 @@ public class BoardDao {
 				spt.setmClerkId(rset.getString("m_clerkId"));
 				spt.setmClerkCode(rset.getString("m_clerkCode"));
 				
-				
 				sptList.add(spt);
 			}
 		} catch (SQLException e) {
@@ -960,7 +958,7 @@ public class BoardDao {
 	public int writeSupportTech(Connection conn, SupportTech spt) {
 		PreparedStatement pstmt=null;
 		int result =0;
-		String query = "insert all into spt_tech values(SUPPORT_SQ.NEXTVAL,?,?,sysdate,0,?,'support',?,'insert',default) "
+		String query = "insert all into spt_tech values(SUPPORT_SQ.NEXTVAL,?,?,sysdate,0,?,'support',?,'insert',null) "
 				+ "into FILEINFO values(FILE_SQ.NEXTVAL,?,'support',SUPPORT_SQ.CURRVAL) " + 
 				"select * from dual";
 		
@@ -1005,6 +1003,176 @@ public class BoardDao {
 		}
 		
 		return result;
+	}
+
+	//제조사관리자 자동할당
+	public int maAutoAssign(Connection conn, int maNo) {
+		PreparedStatement pstmt=null;
+		int result =0;
+		String query = "update SPT_TECH set m_clerk=? where m_clerk=null and p_date=(sysdate-2)";		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setInt(1, maNo);
+			
+			result=pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+		
+	}
+
+	//기술공유 게시판 페이징
+	public ArrayList<ShrTech> shareTechList(Connection conn, int shrCurrentPage, int recordCountPerPage) {
+		PreparedStatement pstmt=null;
+		ResultSet rset=null;
+		ArrayList<ShrTech> list = new ArrayList<ShrTech>();
+		ShrTech shr = null;
+		
+		//시작 게시물 계산
+		int start = shrCurrentPage*recordCountPerPage-(recordCountPerPage-1);
+		//끝 게시물
+		int end = shrCurrentPage*recordCountPerPage;
+		
+		String query = "select * from (select row_number() over(order by s_no desc) num, s.*, m.MEMBER_NAME,t.S_APTNAME from SHR_TECH s , member m, SBOARD_ST t where s.MEMBER_NO=m.MEMBER_NO and s.S_ADDOPT=t.S_ADDOPT) where num between ? and ?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setInt(1, start);
+			pstmt.setInt(2, end);
+			
+			rset=pstmt.executeQuery();
+			
+			while(rset.next()) {
+				shr=new ShrTech();
+				shr.setShareNo(rset.getInt("s_no"));
+				shr.setShareTitle(rset.getString("s_title"));
+				shr.setShareCont(rset.getString("s_cont"));
+				shr.setShareDate(rset.getDate("s_date"));
+				shr.setShareHits(rset.getInt("s_hits"));
+				shr.setMemberNo(rset.getInt("member_no"));
+				shr.setBoardCode(rset.getString("b_code"));
+				shr.setFileName(rset.getString("s_file"));
+				shr.setShareAddopt(rset.getString("s_addopt"));
+				shr.setAddoptName(rset.getString("s_aptname"));
+				shr.setMemberId(rset.getString("member_name"));
+				
+				list.add(shr);
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		return list;
+		
+	}
+	
+	//기술지원 게시판 내비
+	public String getShrPageNavi(Connection conn, int shrCurrentPage, int recordCountPerPage, int naviCountPerPage) {
+		PreparedStatement pstmt= null;
+		ResultSet rset = null;
+		
+		//게시물의 토탈 개수
+		int recordTotalCount=0;
+		String query ="select count(*) as totalcount from SHR_TECH";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			rset = pstmt.executeQuery();
+			if(rset.next()) {
+				recordTotalCount= rset.getInt("totalcount");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		//페이지 총 개수
+		int pageTotalCount = 0;
+		
+		if(recordTotalCount % recordCountPerPage!=0) {
+			pageTotalCount = recordTotalCount / recordCountPerPage + 1;
+		}else {
+			pageTotalCount = recordTotalCount / recordCountPerPage;
+		}
+		
+		//에러방지 코드
+		if(shrCurrentPage<1) {
+			shrCurrentPage=1;
+		}else if(shrCurrentPage>pageTotalCount){
+			shrCurrentPage = pageTotalCount;
+		}
+		
+		//시작페이지 구하기
+		int startNavi = ((shrCurrentPage-1)/naviCountPerPage)*naviCountPerPage+1;
+		//끝페이지 구하기
+		int endNavi = startNavi + naviCountPerPage -1;
+		
+		// 끝 navi를 구할 때 주의해야할점
+		// 토탈 개수가 122개라면 총 토탈페이지는 13개 만들어져야함
+		// 11 12 13 14 15
+		// 토탈 페이지를 고려하지 않고 만들게 되면 끝 navi가 이상하게구해질 수 있음
+		if(endNavi>pageTotalCount) {
+			endNavi=pageTotalCount;
+		}
+		
+		//'<'과 '>'
+		boolean needPrev = true;
+		boolean needNext = true;
+		
+		if(startNavi==1) {needPrev = false;}
+		if(endNavi==pageTotalCount) {needNext=false;}
+		
+		StringBuilder sb = new StringBuilder();
+		//needPrev는 시작페이지가 1이면 false, 시작페이지가 1이 아니라면 true
+		if(needPrev==true) {
+			sb.append("<a href='/shareTechList.do?shrCurrentPage="+(startNavi-1)+"'> << </a> ");
+		}
+		for(int i = startNavi;i<=endNavi;i++) {
+			if(i==shrCurrentPage) {
+				sb.append("<a href='/shareTechList.do?shrCurrentPage="+i+"'><b>"+i+"</b></a>");
+			}else {
+				sb.append("<a href='/shareTechList.do?shrCurrentPage="+i+"'>"+i+"</a> ");
+			}
+		}
+
+		if(needNext) {
+			sb.append("<a href='/shareTechList.do?noticeCurrentPage="+(endNavi+1)+"'> >> </a> ");
+		}
+		return sb.toString();
+	}
+
+	public int deleteShareAnswer(Connection conn, int answNo, int shareNo) {
+		PreparedStatement pstmt= null;
+		int result = 0;
+		String query ="delete from SHR_ANSWER where answ_no=? and s_no=?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setInt(1, answNo);
+			pstmt.setInt(2, shareNo);
+			
+			result=pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+		}
+		return result;
+		
 	}
 
 
