@@ -2,16 +2,21 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import = "kr.or.tech.board.model.vo.*"
+	import = "kr.or.tech.member.model.vo.*"
 	import="kr.or.tech.board.model.service.*"
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 
 <%
-	int noticeNo = Integer.parseInt(request.getParameter("noticeNo"));
-	String boardCode=request.getParameter("boardCode");
-	Notice n = new BoardService().noticeInfo(noticeNo,boardCode);
+	Notice n = (Notice)request.getAttribute("notice");
 	System.out.println("등급:"+n.getNoticeGradeName());
+	
+	Member m = ((Member)request.getSession(false).getAttribute("member"));
+	if(m.getMemberNo()!=n.getMemberNo()){
+		response.sendRedirect("views/error/authorityError.jsp");
+		
+	}
 	
 %>
 <head>
@@ -23,7 +28,7 @@
 <script src="js/bootstrap.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-<title>공지사항 글 작성</title>
+<title>공지사항 글 수정</title>
 
 <style>
 	.container{
@@ -65,6 +70,8 @@
 				<tr>
 					<td width="20%">글 제목</td>
 					<td colspan="2"><input type="text" class="form-control" placeholder="글 제목" name="noticeTitle" maxlength="50" value=<%=n.getNoticeTitle() %>></td>
+					<input type="hidden" name="noticeNo" value="<%=n.getNoticeNo()%>"/>
+					<input type="hidden" name="boardCode" value="<%=n.getBoardCode()%>"/>
 				</tr>
 				<tr>
 					<td colspan="2"><textarea type="text" class="form-control" placeholder="글 내용" name="noticeContent" maxlength="2048" style="height:550px; resize: none;"><%=n.getNoticeContent()%></textarea></td>
@@ -72,7 +79,7 @@
 				<tr>
 					<td width="10%">첨부파일</td>
 						<%if(n.getNoticeFile()==null){%>
-						<td colspan="2"></td>
+						<td colspan="2">첨부파일 없음</td>
 						<%}else{ %>
 						<td colspan="2" name="fileName"><a href="/nFileDown.do?fileName=<%=n.getNoticeFile() %>"><%=n.getNoticeFile() %></a></td>
 						<%} %>

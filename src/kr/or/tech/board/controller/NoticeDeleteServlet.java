@@ -10,16 +10,16 @@ import javax.servlet.http.HttpServletResponse;
 import kr.or.tech.board.model.service.BoardService;
 
 /**
- * Servlet implementation class NoticeUpdateServlet
+ * Servlet implementation class NoticeDeleteServlet
  */
-@WebServlet(name = "NoticeUpdate", urlPatterns = { "/noticeUpdate.do" })
-public class NoticeUpdateServlet extends HttpServlet {
+@WebServlet(name = "NoticeDelete", urlPatterns = { "/noticeDelete.do" })
+public class NoticeDeleteServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public NoticeUpdateServlet() {
+    public NoticeDeleteServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -29,17 +29,15 @@ public class NoticeUpdateServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("utf-8");
-		int noticeNo = Integer.parseInt(request.getParameter("noticeNo"));
-		String boardCode = request.getParameter("boardCode");
-		String noticeTitle= request.getParameter("noticeTitle");
-		String noticeContent=request.getParameter("noticeContent");
-		
-		int result = new BoardService().noticeUpdate(noticeNo,boardCode,noticeTitle,noticeContent);
-		
+		int noticeNo= Integer.parseInt(request.getParameter("noticeNo"));
+		String boardCode=request.getParameter("boardCode");
+		System.out.println("시작한당");
+		int result = new BoardService().noticeDelete(noticeNo,boardCode);
+		System.out.println("result 값:"+result);
 		if(result>0) {
-			response.sendRedirect("/noticeInfo.do?noticeNo="+noticeNo+"&boardCode="+boardCode);
+			response.sendRedirect("/noticeList.do");
 		}else {
-			response.sendRedirect("/views/error/errorPage.jsp");
+			response.sendRedirect("views/error/errorPage.jsp");
 		}
 	}
 

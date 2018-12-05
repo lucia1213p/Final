@@ -57,7 +57,6 @@ table tr td:nth-child(1){
 					<tr>
 						<td style="width :20%;">제목</td>
 						<td colspan="2" name="title"><div id="title"><%= n.getNoticeTitle()%></div></td>
-						<td><textarea style="display:none;" id="noticeTitle" name="noticeTitle"><%=n.getNoticeTitle() %></textarea></td>
 					</tr>
 					
 					<tr>
@@ -72,12 +71,11 @@ table tr td:nth-child(1){
 					<tr>
 						<td>내용</td>
 						<td colspan="2" name="contents"><div style="min-height: 200px; text-align: left;"><%=n.getNoticeContent()%></div></td>
-						<textarea name="noticeNo" style="display:none;"><%=n.getNoticeNo() %></textarea>
 					</tr>
 					<tr>
 						<td>첨부파일</td>
 						<%if(n.getNoticeFile()==null){%>
-						<td colspan="2"></td>
+						<td colspan="2">첨부파일 없음</td>
 						<%}else{ %>
 						<td colspan="2" name="fileName"><a href="/nFileDown.do?fileName=<%=n.getNoticeFile() %>"><%=n.getNoticeFile() %></a></td>
 						<%} %>
@@ -86,9 +84,10 @@ table tr td:nth-child(1){
 			  </table>
 			</form>
 				<a href="/noticeList.do" class="btn btn-primary btn-sm active">목록</a>
-				<!-- (수정) 글 작성자나 관리자가 아니면 수정,삭제 못하게 -->
-				<a href="" onclick="updateNotice(<%=n.getNoticeNo()%>)" class="btn btn-primary btn-sm active">수정</a>
-				<a href="/noticeDelete.do?noticeNo=<%=n.getMemberNo()%>" class="btn btn-primary btn-sm active">삭제</a>
+				<%if(n.getMemberNo()==m.getMemberNo()) {%>
+				<a href="/noticeUpdateForm.do?noticeNo=<%=n.getNoticeNo()%>&boardCode=<%=n.getBoardCode() %>"  class="btn btn-primary btn-sm active">수정</a>
+				<a href="/noticeDelete.do?noticeNo=<%=n.getNoticeNo()%>&boardCode=<%=n.getBoardCode() %>" class="btn btn-primary btn-sm active">삭제</a>
+				<%} %>
 		</div>
 	</div>
 	<div class="container">
@@ -140,13 +139,18 @@ table tr td:nth-child(1){
 		</div>
 		
 	</div>
+<!-- 푸터 내비 -->
+<jsp:include page="/footer.jsp" flush="false" />
+
+
 	<script>
 	
 		//게시글 수정
-		
-		function updateNotice(){
-			$("#title").style.display="none";
-			$("#noticeTitle").style.display="block";
+		function updateNotice(noticeNo,boardCode){
+			console.log("스크립트 들어옴");
+			if(confirm("글을 수정하시겠습니까?")){
+				location.href="/views/board/noticeUpdate.jsp";
+			}
 		}
 		
 		//댓글입력 확인
@@ -189,7 +193,5 @@ table tr td:nth-child(1){
 	
 	
 	</script>
-<!-- 푸터 내비 -->
-<jsp:include page="/footer.jsp" flush="false" />
 </body>
 </html>

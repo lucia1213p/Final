@@ -430,4 +430,49 @@ public class BoardService {
 		return result;
 	}
 
+	public Notice noticeUpdateForm(int noticeNo, String boardCode) {
+	//공지사항내용 가져오기
+		Connection conn = JDBCTemplate.getConnection();
+		Notice notice=new BoardDao().noticeUpdateForm(conn,noticeNo,boardCode);
+		
+		JDBCTemplate.close(conn);
+		
+		return notice;
+	}
+
+	public int noticeUpdate(int noticeNo, String boardCode, String noticeTitle, String noticeContent) {
+		Connection conn = JDBCTemplate.getConnection();
+		int result = new BoardDao().noticeUpdate(conn, noticeNo,boardCode,noticeTitle,noticeContent);
+		
+		if(result>0) {
+			JDBCTemplate.commit(conn);
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		
+		JDBCTemplate.close(conn);
+		return result;
+		
+	}
+
+	public int noticeDelete(int noticeNo, String boardCode) {
+		Connection conn = JDBCTemplate.getConnection();
+		int result=0;
+		//해당 게시글의 댓글 삭제
+		int result1 = new BoardDao().noticeCommentDelete(conn, noticeNo,boardCode);
+		System.out.println("result1:"+result1);
+		//게시글 삭제
+		int result2 = new BoardDao().noticeDelete(conn, noticeNo,boardCode);
+		System.out.println("result2:"+result2);
+		if(result2>0) {
+			JDBCTemplate.commit(conn);
+			result=1;
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		
+		JDBCTemplate.close(conn);
+		return result;
+	}
+
 }

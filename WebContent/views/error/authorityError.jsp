@@ -9,7 +9,7 @@
 <body>
 	<script>
 		alert("권한이 없습니다");
-		location.href="index.jsp";
+		location.href="/index.jsp";
 	</script>
 </body>
 </html>

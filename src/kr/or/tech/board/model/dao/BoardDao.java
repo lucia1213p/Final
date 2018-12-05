@@ -1175,6 +1175,110 @@ public class BoardDao {
 		
 	}
 
+	//수정할 공지사항의 정보 가져오기
+	public Notice noticeUpdateForm(Connection conn, int noticeNo, String boardCode) {
+		PreparedStatement pstmt=null;
+		ResultSet rset=null;
+		Notice notice=null;
+		
+		String query = "select n.*,g.GRADE_NAME,m.MEMBER_NAME from notice n, member m, NOTICE_GRADE g "
+				+ "where n_no=? and b_code=? and n.MEMBER_NO=m.MEMBER_NO and g.N_GRADE=n.N_GRADE";
+
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setInt(1, noticeNo);
+			pstmt.setString(2, boardCode);
+			
+			rset=pstmt.executeQuery();
+			
+			if(rset.next()) {
+				notice=new Notice();
+				notice.setNoticeNo(rset.getInt("n_no"));
+				notice.setNoticeTitle(rset.getString("n_title"));
+				notice.setNoticeContent(rset.getString("n_cont"));
+				notice.setNoticeDate(rset.getDate("n_date"));
+				notice.setNoticeHits(rset.getInt("n_hits"));
+				notice.setMemberNo(rset.getInt("member_no"));
+				notice.setMemberName(rset.getString("member_name"));
+				notice.setBoardCode(rset.getString("b_code"));
+				notice.setNoticeFile(rset.getString("n_file"));
+				notice.setNoticeGrade(rset.getString("n_grade"));
+				notice.setNoticeGradeName(rset.getString("grade_name"));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		return notice;
+	}
+
+	public int noticeUpdate(Connection conn, int noticeNo, String boardCode, String noticeTitle, String noticeContent) {
+		PreparedStatement pstmt=null;
+		int result = 0;
+		
+		String query = "update notice set n_title=?, n_cont=? where n_no=? and b_code=?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setString(1, noticeTitle);
+			pstmt.setString(2, noticeContent);
+			pstmt.setInt(3, noticeNo);
+			pstmt.setString(4, boardCode);
+			
+			result=pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+		}
+		return result;
+	}
+	
+
+	//공지사항 게시글의 댓글 전체 삭제(게시글 삭제를 위해)
+	public int noticeCommentDelete(Connection conn, int noticeNo, String boardCode) {
+		PreparedStatement pstmt=null;
+		int result = 0;
+		String query = "delete from COMMENT_TBL where b_code=? and b_no=?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setString(1, boardCode);
+			pstmt.setInt(2, noticeNo);
+			result=pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+		}
+		return result;
+	}
+
+	//공지사항 게시글 삭제
+	public int noticeDelete(Connection conn, int noticeNo, String boardCode) {
+		PreparedStatement pstmt=null;
+		int result = 0;
+		String query = "delete from notice where n_no=? and b_code=?";
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setInt(1, noticeNo);
+			pstmt.setString(2, boardCode);
+			result=pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+		}
+		return result;
+	}
+
 
 
 

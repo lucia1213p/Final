@@ -70,12 +70,7 @@
 							<td><b><%=selectNotice.getNoticeHits() %></b></td>
 						</tr>
 					<%}else{%>
-						<tr>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-						</tr>
+					
 					<%} %>
 					<%if(recentNoticeList!=null) {
 						for(Notice recentNotice:recentNoticeList){

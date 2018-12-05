@@ -53,7 +53,7 @@ ul, ol {
         <div class="container">
           <div class="row row-30">
             <div class="col-md-4 col-xl-5">
-              <div class="pr-xl-4"><a class="brand" href="index.html"><img class="brand-logo-light" src="images/agency/logo-inverse-140x37.png" alt="" width="140" height="37" srcset="images/agency/logo-retina-inverse-280x74.png 2x"></a>
+              <div class="pr-xl-4"><a class="brand" href="index.html"></a>
                 <p> KH Information Educational Institute. Technical Information Site. Manufacturers and partners can share technology.</p>
                 <!-- Rights-->
                 <p class="rights"><span>©  </span><span class="copyright-year">2018</span><span> </span><span>Technical Site</span></p>
