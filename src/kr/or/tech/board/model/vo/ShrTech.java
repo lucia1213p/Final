@@ -8,19 +8,23 @@ public class ShrTech {
 	private String shareCont; //내용
 	private Date shareDate; //작성일
 	private int shareHits; //조회수
-	private int memberNo; //작성자번호
+	private int memberNo;  //작성자번호
 	private String memberId; //작성자이름
+	private int mclerkNo; //제조사담당자번호
+	private String mclerkId; //제조사담당자번호
 	private String boardCode; //게시판 코드
 	private String fileName; //첨부파일명
 	private String shareAddopt; //채택상태
 	private String AddoptName;
+	
 	
 	public ShrTech() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	public ShrTech(int shareNo, String shareTitle, String shareCont, Date shareDate, int shareHits, int memberNo,
-			String memberId, String boardCode, String fileName, String shareAddopt, String addoptName) {
+			String memberId, int mclerkNo, String mclerkId, String boardCode, String fileName, String shareAddopt,
+			String addoptName) {
 		super();
 		this.shareNo = shareNo;
 		this.shareTitle = shareTitle;
@@ -29,6 +33,8 @@ public class ShrTech {
 		this.shareHits = shareHits;
 		this.memberNo = memberNo;
 		this.memberId = memberId;
+		this.mclerkNo = mclerkNo;
+		this.mclerkId = mclerkId;
 		this.boardCode = boardCode;
 		this.fileName = fileName;
 		this.shareAddopt = shareAddopt;
@@ -76,6 +82,18 @@ public class ShrTech {
 	public void setMemberId(String memberId) {
 		this.memberId = memberId;
 	}
+	public int getMclerkNo() {
+		return mclerkNo;
+	}
+	public void setMclerkNo(int mclerkNo) {
+		this.mclerkNo = mclerkNo;
+	}
+	public String getMclerkId() {
+		return mclerkId;
+	}
+	public void setMclerkId(String mclerkId) {
+		this.mclerkId = mclerkId;
+	}
 	public String getBoardCode() {
 		return boardCode;
 	}
@@ -100,8 +118,6 @@ public class ShrTech {
 	public void setAddoptName(String addoptName) {
 		AddoptName = addoptName;
 	}
-
-	
 	
 	
 }

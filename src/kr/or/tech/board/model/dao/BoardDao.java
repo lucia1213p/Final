@@ -10,7 +10,9 @@ import java.util.ArrayList;
 
 import kr.or.tech.board.model.vo.ShrTech;
 import kr.or.tech.board.model.vo.ShrTechAnswer;
+import kr.or.tech.board.model.vo.SptCategory;
 import kr.or.tech.board.model.vo.SupportTech;
+import kr.or.tech.board.model.vo.TComment;
 import kr.or.tech.board.model.vo.NComment;
 import kr.or.tech.board.model.vo.Notice;
 import kr.or.tech.common.JDBCTemplate;
@@ -916,7 +918,7 @@ public class BoardDao {
 		SupportTech spt=null;
 		ArrayList<SupportTech> sptList = new ArrayList<SupportTech>();
 		
-		String query ="select s.*, t.STATENAME,m.MEMBER_ID,m.MEMBER_CODE from SPT_TECH s,SPT_STATE t, member m where s.STATE_CD=t.SPT_STATECODE and m.MEMBER_NO=s.MEMBER_NO and (m.member_code=?);";
+		String query ="select s.*,t.STATENAME,m.MEMBER_ID, m.MEMBER_CODE from SPT_TECH s, SPT_STATE t, member m where s.STATE_CD=t.SPT_STATECODE and m.MEMBER_NO=s.MEMBER_NO and (m.MEMBER_CODE=? or s.M_CLERK=?)";
 		
 		try {
 			pstmt=conn.prepareStatement(query);
@@ -939,8 +941,6 @@ public class BoardDao {
 				spt.setStateCode(rset.getString("state_cd"));
 				spt.setStateName(rset.getString("statename"));
 				spt.setmClerkNo(rset.getInt("m_clerk"));
-				spt.setmClerkId(rset.getString("m_clerkId"));
-				spt.setmClerkCode(rset.getString("m_clerkCode"));
 				
 				sptList.add(spt);
 			}
@@ -953,7 +953,7 @@ public class BoardDao {
 		}
 		return sptList;
 	}
-
+	
 	//기술지원게시판 작성(파일업로드 했을 경우)
 	public int writeSupportTech(Connection conn, SupportTech spt) {
 		PreparedStatement pstmt=null;
@@ -1009,7 +1009,7 @@ public class BoardDao {
 	public int maAutoAssign(Connection conn, int maNo) {
 		PreparedStatement pstmt=null;
 		int result =0;
-		String query = "update SPT_TECH set m_clerk=? where m_clerk=null and p_date=(sysdate-2)";		
+		String query = "update SPT_TECH set m_clerk=? where m_clerk=null and (to_char(sysdate,'yyyymmdd') - to_char(p_date,'yyyymmdd'))>1";	
 		try {
 			pstmt=conn.prepareStatement(query);
 			pstmt.setInt(1, maNo);
@@ -1076,7 +1076,7 @@ public class BoardDao {
 		
 	}
 	
-	//기술지원 게시판 내비
+	//기술공유 게시판 내비
 	public String getShrPageNavi(Connection conn, int shrCurrentPage, int recordCountPerPage, int naviCountPerPage) {
 		PreparedStatement pstmt= null;
 		ResultSet rset = null;
@@ -1154,6 +1154,7 @@ public class BoardDao {
 		return sb.toString();
 	}
 
+	//기술공유답변 삭제
 	public int deleteShareAnswer(Connection conn, int answNo, int shareNo) {
 		PreparedStatement pstmt= null;
 		int result = 0;
@@ -1276,6 +1277,187 @@ public class BoardDao {
 		}finally {
 			JDBCTemplate.close(pstmt);
 		}
+		return result;
+	}
+
+	//기술지원 게시글 정보
+	public SupportTech supportTechinfo(Connection conn, int sptTechNo, String boardCode) {
+		PreparedStatement pstmt=null;
+		ResultSet rset=null;
+		String query ="select t1.*, m2.MEMBER_ID as clerkId, m2.MEMBER_code as clerkCode from (select s.*,t.STATENAME, m1.MEMBER_ID as partnerId,m1.MEMBER_CODE as partnerCode from spt_tech s,SPT_STATE t, member m1 where s.STATE_CD=t.SPT_STATECODE and s.MEMBER_NO=m1.MEMBER_NO and s.p_no=? and s.b_code=?) t1 left join member m2 on t1.m_clerk=m2.member_no";
+		SupportTech spt=null;
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setInt(1, sptTechNo);
+			pstmt.setString(2, boardCode);
+			rset=pstmt.executeQuery();
+			if(rset.next()) {
+				spt=new SupportTech();
+				spt.setBoardNo(rset.getInt("p_no"));
+				spt.setTitle(rset.getString("p_title"));
+				spt.setContents(rset.getString("p_cont"));
+				spt.setDate(rset.getDate("p_date"));
+				spt.setHits(rset.getInt("p_hits"));
+				spt.setPartnerNo(rset.getInt("member_no"));
+				spt.setPartnerId(rset.getString("partnerId"));
+				spt.setPartnerCode(rset.getString("partnerCode"));
+				spt.setBoardCode(rset.getString("b_code"));
+				spt.setFileName(rset.getString("p_file"));
+				spt.setStateCode(rset.getString("state_cd"));
+				spt.setStateName(rset.getString("statename"));
+				spt.setmClerkNo(rset.getInt("m_clerk"));
+				spt.setmClerkId(rset.getString("clerkId"));
+				spt.setmClerkCode(rset.getString("clerkCode"));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		return spt;
+		
+	}
+
+	//기술지원 댓글
+	public ArrayList<TComment> supportCommentInfo(Connection conn, int sptTechNo, String boardCode) {
+		PreparedStatement pstmt=null;
+		ResultSet rset=null;
+		TComment sptcm=null;
+		ArrayList<TComment> list=new ArrayList<TComment>();
+		String query = "select c.*,m.MEMBER_ID from COMMENT_TBL c, Member m where c.MEMBER_NO=m.MEMBER_NO and c.B_NO=? and c.B_CODE=?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setInt(1, sptTechNo);
+			pstmt.setString(2, boardCode);
+			
+			rset=pstmt.executeQuery();
+			while(rset.next()) {
+				sptcm=new TComment();
+				
+				sptcm.setCommNo(rset.getInt("comm_no"));
+				sptcm.setCommCont(rset.getString("comm_cont"));
+				sptcm.setCommDate(rset.getDate("comm_date"));
+				sptcm.setBoardCode(rset.getString("b_code"));
+				sptcm.setBoardNo(rset.getInt("b_no"));
+				sptcm.setMemberNo(rset.getInt("MEMBER_NO"));
+				sptcm.setMemberName(rset.getString("member_id"));
+				
+				list.add(sptcm);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		return list;
+	}
+
+	public ArrayList<SptCategory> sptCategoryList(Connection conn) {
+		PreparedStatement pstmt=null;
+		ResultSet rset=null;
+		ArrayList<SptCategory> list=new ArrayList<SptCategory>();
+		SptCategory sc=null;
+		
+		String query = "select * from SPT_STATE";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			rset=pstmt.executeQuery();
+			
+			while(rset.next()) {
+				sc=new SptCategory();
+				sc.setCategoryCode(rset.getString("spt_statecode"));
+				sc.setCategoryName(rset.getString("statename"));
+				
+				list.add(sc);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return list;
+	}
+
+	//기술지원 댓글 카테고리에 따라 게시글 상태 변경
+	public int updateSupportActive(Connection conn, TComment tc) {
+		PreparedStatement pstmt=null;
+		int result=0;
+		String query = "update SPT_TECH set state_cd=? where p_no=? and b_code=?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setString(1, tc.getCategory());
+			pstmt.setInt(2, tc.getBoardNo());
+			pstmt.setString(3, tc.getBoardCode());
+			
+			result=pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
+
+	//기술 지원 댓글 insert
+	public int insertTComment(Connection conn, TComment tc) {
+		PreparedStatement pstmt=null;
+		int result=0;
+		
+		String query="INSERT INTO COMMENT_TBL VALUES(COMMENT_SQ.NEXTVAL,?,SYSDATE,?,?,?)";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setString(1,tc.getCommCont());
+			pstmt.setString(2,tc.getBoardCode());
+			pstmt.setInt(3, tc.getBoardNo());
+			pstmt.setInt(4, tc.getMemberNo());
+			
+			result=pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+			
+		}
+		return result;
+	}
+
+	//기술지원게시판 제조사 담당자 선택
+	public int selectSptMclerk(Connection conn, int sptNo, String boardCode, int memNo) {
+		PreparedStatement pstmt=null;
+		int result=0;
+		String query = "update SPT_TECH set m_clerk=?, state_cd='assign' where p_no=? and b_code=?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setInt(1, memNo);
+			pstmt.setInt(2, sptNo);
+			pstmt.setString(3, boardCode);
+			
+			result=pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
 		return result;
 	}
 

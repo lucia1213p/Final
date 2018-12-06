@@ -23,7 +23,6 @@
 <script src="js/bootstrap.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-
 <title>공지사항 게시글 페이지</title>
 
 <style>
@@ -117,8 +116,9 @@ table tr td:nth-child(1){
 								<div><b><%=nc.getMemberName()%></b></div>
 							</div>
 							<div style="width:100%; float:left;" class="comment-block">
-								<p id="comment-text" style="min-height:70px;"class="comment-text"><%=nc.getCommCont() %></p>
-								<input type="hidden" name="comment-update" id="comment-update" style="height:50;" value="<%=nc.getCommCont() %>"/>
+							  <div id="comment-text" style="display:block;"><p style="min-height:70px;"class="comment-text"><%=nc.getCommCont() %></p></div>
+								 <div id="comment-update" style="display:none;"><p style="min-height:70px;"class="comment-text"><%=nc.getCommCont() %></p></div>
+								<%-- <textarea id="comment-update" style="display:none" name="comment-update" class="form-control" rows="3" style="resize: none; margin:0px;"><%=nc.getCommCont() %></textarea> --%>
 								<div class="bottom-comment">
 									<div class="comment-date"><%=nc.getCommDate() %></div>
 									<%if(m.getMemberId().equals(nc.getMemberName())) {%>
@@ -142,16 +142,8 @@ table tr td:nth-child(1){
 <!-- 푸터 내비 -->
 <jsp:include page="/footer.jsp" flush="false" />
 
-
 	<script>
 	
-		//게시글 수정
-		function updateNotice(noticeNo,boardCode){
-			console.log("스크립트 들어옴");
-			if(confirm("글을 수정하시겠습니까?")){
-				location.href="/views/board/noticeUpdate.jsp";
-			}
-		}
 		
 		//댓글입력 확인
 		function cmtCheck(){
@@ -163,11 +155,15 @@ table tr td:nth-child(1){
 				{return true;}
 			}
 		}
+		
 		//댓글 수정
-		function updateComment(){
-			document.getElementById("comment-update").style.display="text";
-			document.getElementById("comment-text").style.display="none";
-		}
+		function updateComment(cmtNum){
+			console.log("스크립트 들어옴~!~");
+			$('#comment-text').style.display="none";
+			$('#comment-update').style.display="block";
+			
+	   }
+		//댓글삭제
 		function delComment(cmtNum){
 			if(confirm("댓글을 삭제하시겠습니까?")){
 				$.ajax({

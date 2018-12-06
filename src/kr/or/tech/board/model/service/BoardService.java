@@ -11,8 +11,9 @@ import kr.or.tech.board.model.vo.Notice;
 import kr.or.tech.board.model.vo.ShrPageData;
 import kr.or.tech.board.model.vo.ShrTech;
 import kr.or.tech.board.model.vo.ShrTechAnswer;
-import kr.or.tech.board.model.vo.SptTechAnswer;
+import kr.or.tech.board.model.vo.SptCategory;
 import kr.or.tech.board.model.vo.SupportTech;
+import kr.or.tech.board.model.vo.TComment;
 import kr.or.tech.common.JDBCTemplate;
 
 public class BoardService {
@@ -44,7 +45,7 @@ public class BoardService {
 		Connection conn =JDBCTemplate.getConnection();
 		
 		//게시물개수와 navi 개수 지정
-		int recordCountPerPage = 1;
+		int recordCountPerPage = 10;
 		int naviCountPerPage =5;
 		
 		//현재페이지의 게시물 리스트 
@@ -72,7 +73,7 @@ public class BoardService {
 		Connection conn = JDBCTemplate.getConnection();
 		
 		//게시물개수와 navi 개수 지정
-		int recordCountPerPage = 1;
+		int recordCountPerPage = 10;
 		int naviCountPerPage =5;
 		
 		//현재페이지의 게시물 리스트 
@@ -363,8 +364,8 @@ public class BoardService {
 	//기술지원게시판 리스트
 	public ArrayList<SupportTech> supportTechList(String memberCode) {
 		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<SupportTech> sptList = new BoardDao().supportTechList(conn,memberCode);
-		
+		ArrayList<SupportTech> sptList=null;
+		sptList = new BoardDao().supportTechList(conn,memberCode);
 		JDBCTemplate.close(conn);
 		
 		return sptList;
@@ -406,15 +407,20 @@ public class BoardService {
 	}
 
 	//기술지원 게시글 정보
-	public ShrTech supportTechInfo(int sptTechNo, String boardCode) {
-		// TODO Auto-generated method stub
-		return null;
+	public SupportTech supportTechInfo(int sptTechNo, String boardCode) {
+		Connection conn = JDBCTemplate.getConnection();
+		 SupportTech spt = new BoardDao().supportTechinfo(conn,sptTechNo,boardCode);
+		
+		 JDBCTemplate.close(conn);
+		return spt;
 	}
 
 	//기술지원 게시글 답변 정보
-	public ArrayList<SptTechAnswer> sptAnswerList(int sptTechNo) {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<TComment> sptAnswerList(int sptTechNo, String boardCode) {
+		Connection conn =JDBCTemplate.getConnection();
+		ArrayList<TComment> list = new BoardDao().supportCommentInfo(conn,sptTechNo,boardCode);
+		JDBCTemplate.close(conn);
+		return list;
 	}
 
 	//기술공유 답변 삭제
@@ -472,6 +478,52 @@ public class BoardService {
 		}
 		
 		JDBCTemplate.close(conn);
+		return result;
+	}
+
+	//기술지원 카테고리
+	public ArrayList<SptCategory> sptCategoryList() {
+		Connection conn = JDBCTemplate.getConnection();
+		ArrayList<SptCategory> list=new BoardDao().sptCategoryList(conn);
+		JDBCTemplate.close(conn);
+		return list;
+	}
+
+	//기술지원댓글 insert
+	public int insertTComment(TComment tc) {
+		Connection conn = JDBCTemplate.getConnection();
+		int result=0;
+		//댓글 카테고리에 따라 게시글 상태 변경
+		int active = new BoardDao().updateSupportActive(conn,tc);
+		
+		if(active>0) {
+			result=new BoardDao().insertTComment(conn,tc);
+		}
+		
+		if(result>0) {
+			JDBCTemplate.commit(conn);
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		
+		JDBCTemplate.close(conn);
+		
+		return result;
+	}
+
+	//기술지원페이지 제조사 담당자 선택
+	public int selectSptMclerk(int sptNo, String boardCode, int memNo) {
+		Connection conn = JDBCTemplate.getConnection();
+		int result = new BoardDao().selectSptMclerk(conn,sptNo,boardCode,memNo);
+		
+		if(result>0) {
+			JDBCTemplate.commit(conn);
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		
+		JDBCTemplate.close(conn);
+		
 		return result;
 	}
 

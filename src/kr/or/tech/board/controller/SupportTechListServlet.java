@@ -38,17 +38,16 @@ public class SupportTechListServlet extends HttpServlet {
 		
 		HttpSession session = request.getSession(false);
 		Member member = (Member)session.getAttribute("member");
+		
 		if(member!=null) {
 			ArrayList<SupportTech> sptList=new BoardService().supportTechList(member.getMemCode());
-			if(sptList.isEmpty()) {
-				System.out.println("비어있음");
-			}
 			RequestDispatcher view = request.getRequestDispatcher("views/board/supportTech.jsp");
 			request.setAttribute("sptList", sptList);
 			view.forward(request, response);
-		}else {
-			response.sendRedirect("views/error/errorPage.jsp");
+		}else { // 회원이 아닐 경우
+			response.sendRedirect("views/error/authorityError.jsp");
 		}
+		
 	}
 
 	/**

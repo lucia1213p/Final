@@ -1,9 +1,6 @@
 package kr.or.tech.board.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -13,20 +10,19 @@ import javax.servlet.http.HttpSession;
 
 import kr.or.tech.board.model.service.BoardService;
 import kr.or.tech.board.model.vo.NComment;
-import kr.or.tech.board.model.vo.Notice;
 import kr.or.tech.member.model.vo.Member;
 
 /**
- * Servlet implementation class NoticeInfoServlet
+ * Servlet implementation class SelectSptMclerkServlet
  */
-@WebServlet(name = "NoticeInfo", urlPatterns = { "/noticeInfo.do" })
-public class NoticeInfoServlet extends HttpServlet {
+@WebServlet(name = "SelectSptMclerk", urlPatterns = { "/selectSptMclerk.do" })
+public class SelectSptMclerkServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public NoticeInfoServlet() {
+    public SelectSptMclerkServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -36,33 +32,27 @@ public class NoticeInfoServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession(false);
-		Member member = (Member)session.getAttribute("member");
+		Member m = (Member)session.getAttribute("member");
 		
-		if(member!=null) {
+		if(m!=null) { //홈페이지에 가입되어있는 회원일 경우
 			request.setCharacterEncoding("utf-8");
-			int noticeNo=Integer.parseInt(request.getParameter("noticeNo"));
-			String boardCode = request.getParameter("boardCode");
 			
-			Notice notice=new BoardService().noticeInfo(noticeNo,boardCode);
+			int sptNo = Integer.parseInt(request.getParameter("sptNo"));
+			String boardCode=request.getParameter("boardCode");
+			int result = new BoardService().selectSptMclerk(sptNo,boardCode,m.getMemberNo());
 			
-			ArrayList<NComment> list = new BoardService().noticeCommentInfo(noticeNo,boardCode);
-			
-			if(notice!=null) {
-				RequestDispatcher view = request.getRequestDispatcher("views/board/noticeInfo.jsp");
-				request.setAttribute("notice", notice);
-				request.setAttribute("nComment", list);
-				view.forward(request, response);
-			}else {
-				//선택한 게시글을 찾을 수 없으면
-				System.out.println("게시글 찾을 수 없음");
+			if(result>0) { 
+				response.sendRedirect("/supportTechInfo.do?sptTechNo="+sptNo+"&boardCode="+boardCode);
+			}else { //댓글업데이트안됨
 				response.sendRedirect("views/error/errorPage.jsp");
 			}
-		}else { 
-			//로그인 안한 상태로 접근시 => 에러메시지와 함께 로그인 페이지로 넘어갈 것
+		}else { //비정상적인 방법으로 접근시
 			response.sendRedirect("views/error/errorPage.jsp");
 		}
-	} 
-	
+		
+		
+	}
+
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */

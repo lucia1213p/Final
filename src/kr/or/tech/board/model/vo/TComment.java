@@ -2,7 +2,8 @@ package kr.or.tech.board.model.vo;
 
 import java.sql.Date;
 
-public class NComment {
+public class TComment {
+	private String category;
 	private int commNo; //댓글번호
 	private String commCont; //댓글내용
 	private Date commDate; //작성일
@@ -10,13 +11,16 @@ public class NComment {
 	private int boardNo; //게시글번호
 	private int memberNo; //작성자번호
 	private String memberName; //작성자 이름
-	public NComment() {
+	private String tcState; //댓글상태코드
+	private String tcStName; //상태 이름
+	public TComment() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public NComment(int commNo, String commCont, Date commDate, String boardCode, int boardNo, int memberNo,
-			String memberName) {
+	public TComment(String category, int commNo, String commCont, Date commDate, String boardCode, int boardNo,
+			int memberNo, String memberName, String tcState, String tcStName) {
 		super();
+		this.category = category;
 		this.commNo = commNo;
 		this.commCont = commCont;
 		this.commDate = commDate;
@@ -24,6 +28,14 @@ public class NComment {
 		this.boardNo = boardNo;
 		this.memberNo = memberNo;
 		this.memberName = memberName;
+		this.tcState = tcState;
+		this.tcStName = tcStName;
+	}
+	public String getCategory() {
+		return category;
+	}
+	public void setCategory(String category) {
+		this.category = category;
 	}
 	public int getCommNo() {
 		return commNo;
@@ -66,5 +78,19 @@ public class NComment {
 	}
 	public void setMemberName(String memberName) {
 		this.memberName = memberName;
-	}	
+	}
+	public String getTcState() {
+		return tcState;
+	}
+	public void setTcState(String tcState) {
+		this.tcState = tcState;
+	}
+	public String getTcStName() {
+		return tcStName;
+	}
+	public void setTcStName(String tcStName) {
+		this.tcStName = tcStName;
+	}
+	
+	
 }

@@ -84,29 +84,27 @@
 				<tbody>
 					<tr>
 						<td style="width :20%;">제목</td>
-						<td colspan="2"><%= shr.getShareTitle()%></td>
+						<td colspan="2" name="title"><%= shr.getShareTitle()%></td>
 					</tr>
 					<tr>
 						<td>작성자</td>
-						<td colspan="2">
-							<div class="tooltip"><%= shr.getMemberId()%>
-								<span class="tooltiptext">
-									이름 : 협력사 엔지니어
-								</span>
-							</div>
-						</td>
+						<td colspan="2" name="writer"><%=shr.getMemberId() %></td>
 					</tr>
 					<tr>
 						<td>작성일자 </td>
-						<td colspan="2"><%= shr.getShareDate()%></td>
+						<td colspan="2" name="date"><%= shr.getShareDate()%></td>
 					</tr>
 					<tr>
 						<td>내용</td>
-						<td colspan="2"><div style="min-height: 200px; text-align: left;"><%=shr.getShareCont()%></div></td>
+						<td colspan="2" name="contents"><div style="min-height: 200px; text-align: left;"><%=shr.getShareCont()%></div></td>
 					</tr>
 					<tr>
 						<td>첨부파일</td>
-						<td colspan="2"><a href="/sFileDown.do?fileName=<%=shr.getFileName()%>"><%=shr.getFileName() %></a></td>
+						<%if(shr.getFileName()==null){%>
+						<td colspan="2">첨부파일 없음</td>
+						<%}else{ %>
+						<td colspan="2" name="fileName"><a href="/sFileDown.do?fileName=<%=shr.getFileName() %>">shr.getFileName() %></a></td>
+						<%} %>
 					</tr>
 				</tbody>
 			</table>

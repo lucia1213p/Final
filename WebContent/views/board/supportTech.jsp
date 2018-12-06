@@ -44,9 +44,6 @@
 	<!-- 헤더 내비 -->
 <jsp:include page="/header.jsp" flush="false" />
 
-</head>
-<body>
-
 <div class="container">
 	<h3 class="text-center"><b>기술지원 게시판</b></h3>
     <table class="table table-bordered table-hover">
@@ -55,8 +52,6 @@
             <th class="text-center">번호</th>
             <th class="text-center">제목</th>
             <th class="text-center">작성자</th>
-            <th class="text-center">수정</th>
-            <th class="text-center">삭제</th>
             <th class="text-center">진행상황</th>
             <th class="text-center">조회수</th>
         </tr>
@@ -65,19 +60,15 @@
     	<%if(!list.isEmpty()) {%>
     		<%for(SupportTech spt : list) {%>
             <tr>
-                <td><a href="/supportTechInfo.do?shrTechNo=<%=spt.getBoardNo()%>&boardCode=<%=spt.getBoardCode()%>"><%=spt.getBoardNo() %></a></td>
+                <td><a href="/supportTechInfo.do?sptTechNo=<%=spt.getBoardNo()%>&boardCode=<%=spt.getBoardCode()%>"><%=spt.getBoardNo() %></a></td>
                 <td><%=spt.getTitle() %></td>
                 <td><%=spt.getPartnerId() %></td>
-                <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a></td>
-                <td class="text-center"><a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
-           		<td><%=spt.getStateName() %></td>
+                <td><%=spt.getStateName() %></td>
            		<td><%=spt.getHits() %></td>
             </tr>
          	<%} %>
 		<%}else{%> 
 			<tr>
-				<td></td>
-				<td></td>
 				<td></td>
 				<td></td>
 				<td></td>
@@ -119,10 +110,10 @@
                 </select>
                     
                 <div class="input-group custom-search-form">
-                     <input type="text" class="form-control" placeholder="Search...">
-                          <span class="input-group-btn">
-			                  <button class="btn btn-default" id="writeBtn" type="button"><span class="glyphicon glyphicon-search"></span></button>
-                          </span>
+                    <input type="text" class="form-control" placeholder="Search...">
+                         <span class="input-group-btn">
+		                  <button class="btn btn-default" id="writeBtn" type="button"><span class="glyphicon glyphicon-search"></span></button>
+                         </span>
                 </div>
             </center>
         </form>

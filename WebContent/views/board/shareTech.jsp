@@ -112,18 +112,9 @@
                     <option>작성자</option>
                     <option>제목</option>
                 </select>
-                    
-                <div class="input-group custom-search-form">
-                     <input type="text" class="form-control" placeholder="Search...">
-                         <!-- 
-                         	<span class="input-group-btn">
-			                  <button class="btn btn-default" id="writeBtn" type="button"><span class="glyphicon glyphicon-search"></span></button>
-                        	</span>
-                          -->
-                          <span class="input-group-btn">
-			                  <button class="btn btn-default" id="writeBtn" type="button"><span class="glyphicon glyphicon-search"></span></button>
-                          </span>
-                </div>
+                <input type="text" name="search" class="form-control" placeholder="Search...">
+		        <button class="btn btn-default form-control" id="writeBtn" onclick="document.getElementById('searchBtn').submit();" type="button"><span class="glyphicon glyphicon-search"></span></button>
+
             </center>
         </form>
     	</div>
