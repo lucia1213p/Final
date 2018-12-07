@@ -151,7 +151,7 @@
                       <div class="body-right">
                        <%if(sta.getAnswAddopt().equals("Y")) {%>
  			  			<img src="/img/checkMark.png" class="media-check" width="50" height="50">
- 			  		<%}%>
+ 			  		  <%}%>
 			  		</div>
                    </div>
                    <div class="body-content">
@@ -185,7 +185,7 @@
 
 	function delAnswer(aswNo,shareNo,adptAct){
 		console.log(adptAct);
-		if(adptAct!){
+		if(adptAct.equals('Y')){
 			if(confirm("답변을 삭제하시겠습니까?")){
 				$.ajax({
 					url:"/shareAnswerDelete.do",

@@ -59,7 +59,7 @@
 		<table class="table table-striped" style="text-align:center; border:1px solid #dddddd">
 			<thead>
 				<tr>
-					<th rowspan="2" colspan="2" style="background-color : #eeeeee; text-align:center;"><h4>공지사항 작성</h4></th>
+					<th rowspan="2" colspan="2" style="background-color : #eeeeee; text-align:center;"><h4>공지사항 수정</h4></th>
 				</tr>
 			</thead>
 			<tbody>

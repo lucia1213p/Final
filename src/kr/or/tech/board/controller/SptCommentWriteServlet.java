@@ -41,7 +41,7 @@ public class SptCommentWriteServlet extends HttpServlet {
 			TComment tc=new TComment();
 			tc.setCategory(request.getParameter("category"));
 			tc.setBoardCode(request.getParameter("boardCode"));
-			tc.setBoardNo(Integer.parseInt(request.getParameter("noticeNo")));
+			tc.setBoardNo(Integer.parseInt(request.getParameter("sptTechNo")));
 			tc.setMemberNo(m.getMemberNo());
 			tc.setCommCont(request.getParameter("comment"));
 			int result = new BoardService().insertTComment(tc);

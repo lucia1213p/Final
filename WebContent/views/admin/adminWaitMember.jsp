@@ -24,6 +24,12 @@
 	.row{
 		text-align:center;
 	}
+	table tr{
+		text-align:center;
+	}
+	table{
+		margin-top:40px;
+	}
 </style>
 
 <title>회원가입 승인대기 목록</title>
@@ -54,6 +60,7 @@
 <jsp:include page="/header.jsp" flush="false" />
 
 	<div class="container">
+		<h4><b>승인 대기 회원</b></h4>
 		<table class="table table-bordered table-hover">
 		<thead class="table">
 			<tr>

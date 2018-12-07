@@ -121,8 +121,8 @@
             </center>
         </form>
     	</div>
+	  </div>
 	</div>
-	 </div>
 
 <!-- 푸터 내비 -->
 <jsp:include page="/footer.jsp" flush="false" />
@@ -149,7 +149,7 @@
 					}
 				},
 				error:function(){
-					location.href="/views/error/errorPage.jsp"	;
+					location.href="/views/error/errorPage.jsp";
 				}
 			});
 		}else{

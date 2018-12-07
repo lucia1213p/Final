@@ -12,6 +12,7 @@ import kr.or.tech.board.model.vo.ShrPageData;
 import kr.or.tech.board.model.vo.ShrTech;
 import kr.or.tech.board.model.vo.ShrTechAnswer;
 import kr.or.tech.board.model.vo.SptCategory;
+import kr.or.tech.board.model.vo.SptPageData;
 import kr.or.tech.board.model.vo.SupportTech;
 import kr.or.tech.board.model.vo.TComment;
 import kr.or.tech.common.JDBCTemplate;
@@ -180,11 +181,11 @@ public class BoardService {
 		return result;
 	}
 
-	public MainpageBoard mainOneSelectNotice() {
+	public MainpageBoard mainOneSelectNotice(int memberNo) {
 		Connection conn =JDBCTemplate.getConnection();
 		//관리자가 선택한 공지사항 게시글 1개
 		Notice selectNotice = new BoardDao().mainOneSelectNotice(conn);
-		//최근 공지사항 게시글5개
+		//최근 공지사항 게시글 5개
 		ArrayList<Notice> recentNotice = new BoardDao().mainRecentNotice(conn);
 		
 		MainpageBoard mpb=null;
@@ -196,6 +197,29 @@ public class BoardService {
 		JDBCTemplate.close(conn);
 		
 		return mpb;
+	}
+	//최신 기술 공유 게시글
+	public ArrayList<ShrTech> mainRecentShare() {
+		Connection conn =JDBCTemplate.getConnection();
+		ArrayList<ShrTech> recentShare = new BoardDao().mainRecentShare(conn);
+		JDBCTemplate.close(conn);
+		return recentShare;
+	}
+
+	//최신 기술 지원 게시글(ㄱ제조사 로그인시)
+	public ArrayList<SupportTech> mainRecentSupportM(String memCode) {
+		Connection conn =JDBCTemplate.getConnection();
+		ArrayList<SupportTech> recentSupport = new BoardDao().mainRecentSupportM(conn,memCode);
+		JDBCTemplate.close(conn);
+		return recentSupport;
+		
+	}
+	//최신 기술 지원 게시글(협력사 로그인시)
+	public ArrayList<SupportTech> mainRecentSupportP(String memCode) {
+		Connection conn =JDBCTemplate.getConnection();
+		ArrayList<SupportTech> recentSupport = new BoardDao().mainRecentSupportP(conn,memCode);
+		JDBCTemplate.close(conn);
+		return recentSupport;
 	}
 	
 	//----기술공유게시판----
@@ -362,13 +386,29 @@ public class BoardService {
 	
 	//----------기술지원게시판------------
 	//기술지원게시판 리스트
-	public ArrayList<SupportTech> supportTechList(String memberCode) {
+	public SptPageData supportTechList(int sptCurrentPage, String memberCode) {
 		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<SupportTech> sptList=null;
-		sptList = new BoardDao().supportTechList(conn,memberCode);
+		
+		//게시물개수와 navi 개수 지정
+		int recordCountPerPage = 10;
+		int naviCountPerPage =5;
+		
+		//현재페이지의 게시물 리스트 
+		ArrayList<SupportTech> sptList=  new BoardDao().supportTechList(conn,sptCurrentPage,recordCountPerPage,memberCode);
+		String pageNavi = new BoardDao().getSptPageNavi(conn,sptCurrentPage,recordCountPerPage,naviCountPerPage,memberCode);
+		
+		SptPageData spd=null;
+		
+		if(!sptList.isEmpty() && !pageNavi.isEmpty()) {
+			spd= new SptPageData();
+			spd.setList(sptList);
+			spd.setPageNavi(pageNavi);
+		}else {
+			System.out.println("데이터없음");
+		}
 		JDBCTemplate.close(conn);
 		
-		return sptList;
+		return spd;
 	}
 
 	//기술지원게시글 작성
@@ -404,12 +444,22 @@ public class BoardService {
 		}
 		JDBCTemplate.close(conn);
 		return result;
+
 	}
 
 	//기술지원 게시글 정보
 	public SupportTech supportTechInfo(int sptTechNo, String boardCode) {
 		Connection conn = JDBCTemplate.getConnection();
-		 SupportTech spt = new BoardDao().supportTechinfo(conn,sptTechNo,boardCode);
+		 
+		int changeHits =  new BoardDao().changeHitsTech(conn, sptTechNo, boardCode);
+		
+		if(changeHits>0) {
+			JDBCTemplate.commit(conn);
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		
+		SupportTech spt = new BoardDao().supportTechinfo(conn,sptTechNo,boardCode);
 		
 		 JDBCTemplate.close(conn);
 		return spt;
@@ -435,9 +485,10 @@ public class BoardService {
 		JDBCTemplate.close(conn);
 		return result;
 	}
-
-	public Notice noticeUpdateForm(int noticeNo, String boardCode) {
+	
 	//공지사항내용 가져오기
+	public Notice noticeUpdateForm(int noticeNo, String boardCode) {
+		
 		Connection conn = JDBCTemplate.getConnection();
 		Notice notice=new BoardDao().noticeUpdateForm(conn,noticeNo,boardCode);
 		
@@ -526,5 +577,7 @@ public class BoardService {
 		
 		return result;
 	}
+
+
 
 }

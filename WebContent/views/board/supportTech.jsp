@@ -6,7 +6,10 @@
 		import = "kr.or.tech.member.model.vo.*"
  %>
  <%
- ArrayList<SupportTech> list=(ArrayList<SupportTech>)request.getAttribute("sptList");
+ SptPageData spd= (SptPageData)request.getAttribute("sptPageData");
+ 
+ ArrayList<SupportTech> list=spd.getList();
+ String pageNavi = spd.getPageNavi();
  Member m = ((Member)request.getSession(false).getAttribute("member"));
  %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -89,13 +92,7 @@
 	  </div>
 	   <div class="row">              
 		  <ul class="pagination">
-		  	<li><a href="#">«</a></li>
-		    <li><a href="#">1</a></li>
-		    <li><a href="#">2</a></li>
-		    <li><a href="#">3</a></li>
-		    <li><a href="#">4</a></li>
-		    <li><a href="#">5</a></li>
-		    <li><a href="#">»</a></li>
+		  	<li><%=pageNavi%></li>
 		  </ul>
 	  </div>
 	  
@@ -108,13 +105,8 @@
                     <option>작성자</option>
                     <option>제목</option>
                 </select>
-                    
-                <div class="input-group custom-search-form">
-                    <input type="text" class="form-control" placeholder="Search...">
-                         <span class="input-group-btn">
-		                  <button class="btn btn-default" id="writeBtn" type="button"><span class="glyphicon glyphicon-search"></span></button>
-                         </span>
-                </div>
+                <input type="text" name="search" class="form-control" placeholder="Search...">
+		        <button class="btn btn-default form-control" id="writeBtn" onclick="document.getElementById('searchBtn').submit();" type="button"><span class="glyphicon glyphicon-search"></span></button>
             </center>
         </form>
     	</div>

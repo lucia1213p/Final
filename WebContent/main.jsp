@@ -7,6 +7,8 @@
 	MainpageBoard mpb=(MainpageBoard)request.getAttribute("mainPageBoard");
 	Notice selectNotice=mpb.getSelectNotice();
 	ArrayList<Notice> recentNoticeList=mpb.getRecentNotice();
+	ArrayList<SupportTech> recentSupportList=mpb.getRecentSupport();
+	ArrayList<ShrTech> recentShareList=mpb.getRecentShare();
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -29,7 +31,7 @@
 		padding-bottom:40px;
 	}
 	
-	#techShare{
+	#techShare, #techSupport{
 		padding-top:40px;
 	}
 	#selectNotice{
@@ -98,23 +100,34 @@
 			<table class="table table-bordered">
 				<thead class="thead-dark">
 					<tr>
-			            <th class="text-center">No</th>
-			            <th class="text-center">Title</th>
-			            <th class="text-center">Writer</th>
-			            <th class="text-center">Action</th>
-			            <th class="text-center">Hits</th>
-			            <th class="text-center">Select</th>
+			            <th class="text-center">번호</th>
+			            <th class="text-center">제목</th>
+			            <th class="text-center">작성자</th>
+			            <th class="text-center">채택현황</th>
+			            <th class="text-center">조회수</th>
 			        </tr>
 				</thead>
 				<tbody>
+					<%if(recentShareList!=null) {
+						for(ShrTech recentShare:recentShareList){
+					%>
+						<tr>
+							<td><a href="/shareTechInfo.do?noticeNo=<%=recentShare.getShareNo()%>&boardCode=<%=recentShare.getBoardCode()%>"><%=recentShare.getShareNo()%></a></td>
+							<td><%=recentShare.getShareTitle() %></td>
+							<td><%=recentShare.getMemberId() %></td>
+							<td><%=recentShare.getAddoptName()%></td>
+							<td><%=recentShare.getShareHits() %></td>
+						</tr>
+					<%}%>
+				    <%}else{%>
 					<tr>
 						<td></td>
 						<td></td>
 						<td></td>
 						<td></td>
-						<td></td>
-						<td></td>
+					    <td></td>
 					</tr>
+					<%} %>
 				</tbody>
 			</table>
 		</div>
@@ -123,23 +136,34 @@
 			<table class="table table-bordered">
 			<thead class="table">
 					<tr>
-			            <th class="text-center">No</th>
-			            <th class="text-center">Title</th>
-			            <th class="text-center">Writer</th>
-			            <th class="text-center">Action</th>
-			            <th class="text-center">Hits</th>
-			            <th class="text-center">Select</th>
+			            <th class="text-center">번호</th>
+			            <th class="text-center">제목</th>
+			            <th class="text-center">작성자</th>
+			            <th class="text-center">진행상황</th>
+			            <th class="text-center">조회수</th>
 			        </tr>
 				</thead>
 				<tbody>
+					<%if(recentSupportList!=null) {
+						for(SupportTech recentSupport:recentSupportList){
+					%>
+						<tr>
+							<td><a href="/supportTechInfo.do?noticeNo=<%=recentSupport.getBoardNo()%>&boardCode=<%=recentSupport.getBoardCode()%>"><%=recentSupport.getBoardNo()%></a></td>
+							<td><%=recentSupport.getTitle() %></td>
+							<td><%=recentSupport.getPartnerId()%></td>
+							<td><%=recentSupport.getStateName()%></td>
+							<td><%=recentSupport.getHits()%></td>
+						</tr>
+					<%}%>
+				    <%}else{%>
 					<tr>
 						<td></td>
 						<td></td>
 						<td></td>
 						<td></td>
-						<td></td>
-						<td></td>
+					    <td></td>
 					</tr>
+					<%} %>
 				</tbody>
 			</table>
 		</div>

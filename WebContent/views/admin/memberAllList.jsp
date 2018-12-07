@@ -44,6 +44,7 @@
 <jsp:include page="/header.jsp" flush="false" />
 
 	<div class="container">
+	<h4><b>회원관리</b></h4>
 		<table class="table table-bordered table-hover">
 		<thead class="table">
 			<tr>

@@ -501,7 +501,7 @@ public class BoardDao {
 		}finally {
 			JDBCTemplate.close(stmt);
 		}
-		System.out.println("dao1실행완료");
+		System.out.println("dao1 실행 완료");
 		return result;
 	}
 	
@@ -612,10 +612,108 @@ public class BoardDao {
 		
 		return recentNotice;
 	}
-	
-	//----------기술공유게시판
+	// 최근 기술 공유 게시글 5개 
+	public ArrayList<ShrTech> mainRecentShare(Connection conn) {
+		PreparedStatement pstmt=null;
+		ResultSet rset=null;
+		ArrayList<ShrTech> recentShare=new ArrayList<ShrTech>();
+		
+		String query = "select a.*,m.MEMBER_id,s.S_APTNAME from(SELECT * FROM shr_tech ORDER BY s_date DESC)a, sboard_st s, member m where a.member_no=m.MEMBER_NO and a.s_addopt=s.S_ADDOPT and rownum<=5";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			rset=pstmt.executeQuery();
+			
+			while(rset.next()) {
+				ShrTech shr = new ShrTech();
+				shr.setShareNo(rset.getInt("s_no"));
+				shr.setShareTitle(rset.getString("s_title"));
+				shr.setMemberId(rset.getString("member_id"));
+				shr.setMemberNo(rset.getInt("member_no"));
+				shr.setAddoptName(rset.getString("s_aptname"));
+				shr.setShareAddopt(rset.getString("s_addopt"));
+				shr.setShareHits(rset.getInt("s_hits"));
+				recentShare.add(shr);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return recentShare;
+	}
+	// 최근 기술 지원 게시글 5개  (제조사 로그인시)
+	public ArrayList<SupportTech> mainRecentSupportM(Connection conn,String memCode) {
+		PreparedStatement pstmt=null;
+		ResultSet rset=null;
+		ArrayList<SupportTech> recentSupport=new ArrayList<SupportTech>();
+		
+		String query = "select s.*,t.statename,m.member_id from spt_tech s, SPT_STATE t, member m where s.STATE_CD=t.SPT_STATECODE and s.MEMBER_NO=m.MEMBER_NO and rownum<5 order by p_date desc";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			rset=pstmt.executeQuery();
+			
+			while(rset.next()) {
+				SupportTech spt = new SupportTech();
+				spt.setBoardNo(rset.getInt("p_no"));
+				spt.setHits(rset.getInt("p_hits"));
+				spt.setTitle(rset.getString("p_title"));
+				spt.setPartnerId(rset.getString("member_id"));
+				spt.setPartnerNo(rset.getInt("member_no"));
+				spt.setStateName(rset.getString("statename"));
+				recentSupport.add(spt);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return recentSupport;
+	}
+	// 최근 기술 지원 게시글 5개  (협력사 로그인시)
+		public ArrayList<SupportTech> mainRecentSupportP(Connection conn, String memCode) {
+			PreparedStatement pstmt=null;
+			ResultSet rset=null;
+			ArrayList<SupportTech> recentSupport=new ArrayList<SupportTech>();
+			
+			String query = "select s.*,t.statename,m.member_id from spt_tech s, SPT_STATE t, member m where s.STATE_CD=t.SPT_STATECODE and s.MEMBER_NO=m.MEMBER_NO and m.member_code=? and rownum<5 order by p_date desc";
+			
+			try {
+				pstmt=conn.prepareStatement(query);
+				pstmt.setString(1, memCode);
+				rset=pstmt.executeQuery();
+				
+				while(rset.next()) {
+					SupportTech spt = new SupportTech();
+					spt.setBoardNo(rset.getInt("p_no"));
+					spt.setHits(rset.getInt("p_hits"));
+					spt.setTitle(rset.getString("p_title"));
+					spt.setPartnerId(rset.getString("member_id"));
+					spt.setPartnerNo(rset.getInt("member_no"));
+					spt.setStateName(rset.getString("statename"));
+					recentSupport.add(spt);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}finally {
+				JDBCTemplate.close(rset);
+				JDBCTemplate.close(pstmt);
+			}
+			
+			return recentSupport;
+		}
+		
+	///----------기술공유게시판
 
-	public ArrayList<ShrTech> shareTechList(Connection conn) {
+	public ArrayList<ShrTech> shareTechList(Connection conn, int sptCurrentPage, int recordCountPerPage, String memberCode) {
 		PreparedStatement pstmt=null;
 		ResultSet rset=null;
 		ArrayList<ShrTech> shrList=new ArrayList<ShrTech>();
@@ -912,18 +1010,25 @@ public class BoardDao {
 	//----------기술지원게시판---------------------------------------
 	
 	//기술지원 (협력사담당자나 제조사담당자가 같은 회사 인 것만 출력)
-	public ArrayList<SupportTech> supportTechList(Connection conn, String memberCode) {
+	public ArrayList<SupportTech> supportTechList(Connection conn, int sptCurrentPage, int recordCountPerPage, String memberCode) {
 		PreparedStatement pstmt=null;
 		ResultSet rset=null;
 		SupportTech spt=null;
 		ArrayList<SupportTech> sptList = new ArrayList<SupportTech>();
 		
-		String query ="select s.*,t.STATENAME,m.MEMBER_ID, m.MEMBER_CODE from SPT_TECH s, SPT_STATE t, member m where s.STATE_CD=t.SPT_STATECODE and m.MEMBER_NO=s.MEMBER_NO and (m.MEMBER_CODE=? or s.M_CLERK=?)";
-		
+		String query ="SELECT * from (select row_number() over(order by p_no desc) num, s.*,t.STATENAME,m.MEMBER_ID, m.MEMBER_CODE from SPT_TECH s, SPT_STATE t, member m where s.STATE_CD=t.SPT_STATECODE and m.MEMBER_NO=s.MEMBER_NO and (m.MEMBER_CODE=?)) where num between ? and ?";
+		//시작 게시물 계산
+		int start = sptCurrentPage*recordCountPerPage-(recordCountPerPage-1);
+		//끝 게시물
+		int end = sptCurrentPage*recordCountPerPage;
+
+				
 		try {
 			pstmt=conn.prepareStatement(query);
 			pstmt.setString(1, memberCode);
-			pstmt.setString(2, memberCode);
+			
+			pstmt.setInt(2, start);
+			pstmt.setInt(3, end);
 			rset=pstmt.executeQuery();
 			
 			while(rset.next()) {
@@ -953,6 +1058,86 @@ public class BoardDao {
 		}
 		return sptList;
 	}
+	//기술지원게시판 페이징내비
+	public String getSptPageNavi(Connection conn, int sptCurrentPage, int recordCountPerPage, int naviCountPerPage,
+			String memberCode) {
+		PreparedStatement pstmt= null;
+		ResultSet rset = null;
+		
+		//게시물의 토탈 개수
+		int recordTotalCount=0;
+		String query ="select count(*) as totalcount from SPT_TECH s, member m where m.MEMBER_NO=s.MEMBER_NO and m.MEMBER_CODE=?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setString(1, memberCode);
+			rset = pstmt.executeQuery();
+			if(rset.next()) {
+				recordTotalCount= rset.getInt("totalcount");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		//페이지 총 개수
+		int pageTotalCount = 0;
+		
+		if(recordTotalCount % recordCountPerPage!=0) {
+			pageTotalCount = recordTotalCount / recordCountPerPage + 1;
+		}else {
+			pageTotalCount = recordTotalCount / recordCountPerPage;
+		}
+		
+		//에러방지 코드
+		if(sptCurrentPage<1) {
+			sptCurrentPage=1;
+		}else if(sptCurrentPage>pageTotalCount){
+			sptCurrentPage = pageTotalCount;
+		}
+		
+		//시작페이지 구하기
+		int startNavi = ((sptCurrentPage-1)/naviCountPerPage)*naviCountPerPage+1;
+		//끝페이지 구하기
+		int endNavi = startNavi + naviCountPerPage -1;
+		
+		// 끝 navi를 구할 때 주의해야할점
+		// 토탈 개수가 122개라면 총 토탈페이지는 13개 만들어져야함
+		// 11 12 13 14 15
+		// 토탈 페이지를 고려하지 않고 만들게 되면 끝 navi가 이상하게구해질 수 있음
+		if(endNavi>pageTotalCount) {
+			endNavi=pageTotalCount;
+		}
+		
+		//'<'과 '>'
+		boolean needPrev = true;
+		boolean needNext = true;
+		
+		if(startNavi==1) {needPrev = false;}
+		if(endNavi==pageTotalCount) {needNext=false;}
+		
+		StringBuilder sb = new StringBuilder();
+		//needPrev는 시작페이지가 1이면 false, 시작페이지가 1이 아니라면 true
+		if(needPrev==true) {
+			sb.append("<a href='/supportTechList.do?sptCurrentPage="+(startNavi-1)+"'> << </a> ");
+		}
+		for(int i = startNavi;i<=endNavi;i++) {
+			if(i==sptCurrentPage) {
+				sb.append("<a href='/supportTechList.do?sptCurrentPage="+i+"'><b>"+i+"</b></a>");
+			}else {
+				sb.append("<a href='/supportTechList.do?sptCurrentPage="+i+"'>"+i+"</a> ");
+			}
+		}
+
+		if(needNext) {
+			sb.append("<a href='/supportTechList.do?sptCurrentPage="+(endNavi+1)+"'> >> </a> ");
+		}
+		return sb.toString();
+	}
+
 	
 	//기술지원게시판 작성(파일업로드 했을 경우)
 	public int writeSupportTech(Connection conn, SupportTech spt) {
@@ -1461,6 +1646,31 @@ public class BoardDao {
 		return result;
 	}
 
+	//기술지원 조회수
+	public int changeHitsTech(Connection conn, int sptTechNo, String boardCode) {
+		PreparedStatement pstmt=null;
+		int result = 0;
+		String query ="update SPT_TECH set P_HITS=P_HITS+1 where p_no=? and b_code=?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setInt(1, sptTechNo);
+			pstmt.setString(2, boardCode);
+			
+			result=pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+		}
+		return result;
+	}
+
+	
+
+
+	
 
 
 

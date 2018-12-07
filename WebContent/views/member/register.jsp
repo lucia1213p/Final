@@ -179,7 +179,7 @@
                <form action="/registerAction.do" method="post" name="login">
                	  <div class="form-group">
                	  	<label for="inputId">등급 / 소속</label>
-               	  	<select name="grade" id="selectGrade" class="selectpicker">
+               	  	<select name="grade" id="selectGrade" class="selectpicker ">
                	  		<option value="">Select Grade</option>
                	  		<option value="HA">홈페이지 관리자</option>
                	  		<option value="MA">제조사 관리자</option>
@@ -188,7 +188,11 @@
                	  	</select>
                	  	<select name="belong" id="selectBelong" class="selectpicker">
                	  		<option value="">Select Belong</option>
-               	  		
+               	  		<option value="A_Partner">A협력사</option>
+               	  		<option value="B_Partner">B협력사</option>
+               	  		<option value="C_Partner">C협력사</option>
+               	  		<option value="D_Partner">D협력사</option>
+               	  		<option value="E_Partner">E협력사</option>
                	  	</select>
                	  </div>
                   <div class="form-group">

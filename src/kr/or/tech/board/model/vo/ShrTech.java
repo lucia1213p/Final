@@ -15,7 +15,7 @@ public class ShrTech {
 	private String boardCode; //게시판 코드
 	private String fileName; //첨부파일명
 	private String shareAddopt; //채택상태
-	private String AddoptName;
+	private String addoptName;
 	
 	
 	public ShrTech() {
@@ -38,7 +38,7 @@ public class ShrTech {
 		this.boardCode = boardCode;
 		this.fileName = fileName;
 		this.shareAddopt = shareAddopt;
-		AddoptName = addoptName;
+		this.addoptName = addoptName;
 	}
 	public int getShareNo() {
 		return shareNo;
@@ -113,10 +113,10 @@ public class ShrTech {
 		this.shareAddopt = shareAddopt;
 	}
 	public String getAddoptName() {
-		return AddoptName;
+		return addoptName;
 	}
 	public void setAddoptName(String addoptName) {
-		AddoptName = addoptName;
+		this.addoptName = addoptName;
 	}
 	
 	

@@ -114,13 +114,11 @@
                 </select>
                 <input type="text" name="search" class="form-control" placeholder="Search...">
 		        <button class="btn btn-default form-control" id="writeBtn" onclick="document.getElementById('searchBtn').submit();" type="button"><span class="glyphicon glyphicon-search"></span></button>
-
             </center>
         </form>
     	</div>
 	</div>
    </div>
-   
    <script>
 	   $('#writeBtn').click(function(){
 			location.href="/views/board/shareTechWrite.jsp";

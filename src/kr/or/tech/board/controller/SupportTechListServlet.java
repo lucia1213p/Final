@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import kr.or.tech.board.model.service.BoardService;
 import kr.or.tech.board.model.vo.ShrTech;
+import kr.or.tech.board.model.vo.SptPageData;
 import kr.or.tech.board.model.vo.SupportTech;
 import kr.or.tech.member.model.vo.Member;
 
@@ -40,9 +41,17 @@ public class SupportTechListServlet extends HttpServlet {
 		Member member = (Member)session.getAttribute("member");
 		
 		if(member!=null) {
-			ArrayList<SupportTech> sptList=new BoardService().supportTechList(member.getMemCode());
+			//페이징처리
+			int sptCurrentPage;
+			if(request.getParameter("sptCurrentPage")==null) {
+				sptCurrentPage=1;
+			}else {
+				sptCurrentPage= Integer.parseInt(request.getParameter("sptCurrentPage"));
+			}
+			
+			SptPageData spt=new BoardService().supportTechList(sptCurrentPage, member.getMemCode());
 			RequestDispatcher view = request.getRequestDispatcher("views/board/supportTech.jsp");
-			request.setAttribute("sptList", sptList);
+			request.setAttribute("sptPageData", spt);
 			view.forward(request, response);
 		}else { // 회원이 아닐 경우
 			response.sendRedirect("views/error/authorityError.jsp");

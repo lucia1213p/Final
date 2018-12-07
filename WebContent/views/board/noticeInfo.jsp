@@ -26,7 +26,6 @@
 <title>공지사항 게시글 페이지</title>
 
 <style>
-
 .container{
 		padding-top:50px;
 }
@@ -57,7 +56,6 @@ table tr td:nth-child(1){
 						<td style="width :20%;">제목</td>
 						<td colspan="2" name="title"><div id="title"><%= n.getNoticeTitle()%></div></td>
 					</tr>
-					
 					<tr>
 						<td>작성자</td>
 						<td colspan="2" name="writer"><%= n.getMemberName()%></td>
@@ -171,7 +169,7 @@ table tr td:nth-child(1){
 					type:"post",
 					data:{cmtNo:cmtNum},
 					success: function(result){
-						if (result==1) {
+						if(result==1) {
 							alert("삭제되었습니다");
 							location.reload();
 						}else{
